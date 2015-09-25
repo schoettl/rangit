@@ -1,7 +1,10 @@
+{-# LANGUAGE FlexibleInstances #-}
+
 module Test.Utils ((@=~?)) where
 
 import Test.HUnit as HU
 import Rangit.Train
+import Data.Angle
 
 -- from: http://lambda.jstolarek.com/tag/quickcheck/
 
@@ -16,7 +19,11 @@ instance AlmostEq Float where
 
 instance AlmostEq Position where
     Position x1 y1 =~ Position x2 y2 = x1 =~ x2 && y1 =~ y2
+
+instance AlmostEq (Radians Float) where
+    Radians x =~ Radians y = x =~ y
  
+-- operator definiton for HSpec:
 (@=~?) :: (Show a, AlmostEq a) => a -> a -> HU.Assertion
 (@=~?) expected actual  = expected =~ actual HU.@? assertionMsg
     where

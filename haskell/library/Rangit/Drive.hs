@@ -3,8 +3,6 @@ module Rangit.Drive where
 import Data.Angle
 import Rangit.Train
 
--- driving --
-
 -- | Length to drive in one calculation step.
 stepLength = 0.01
 
@@ -34,8 +32,24 @@ movePart :: Part               -- ^ Current part to be moved
          -> ([Part], Position) -- ^ Moved parts including current one and new target position i. e. position of current part's left hitch
 movePart part (ps, target) =
     let center = calculateCenterPosition part
-        absAngle = arctangent $ (yPos target - yPos center) / (xPos target - xPos center)
-    in (part { partAngle = absAngle } : ps, calculateLeftHitchPosition part)
+        yDiff = yPos target - yPos center
+        xDiff = xPos target - xPos center
+        absAngle = calculateAngleByArcTan xDiff yDiff
+    in (part { partPosition = target, partAngle = absAngle } : ps, calculateLeftHitchPosition part)
+
+-- | Calculate an angle using arctan given dx and dy.
+calculateAngleByArcTan :: Float -> Float -> Radians Float
+calculateAngleByArcTan xDiff yDiff = if xDiff /= 0
+    then decideForY  xDiff yDiff
+    else decideForX0 xDiff yDiff
+    where
+        decideForY xDiff yDiff
+            | yDiff == 0 && xDiff > 0 = Radians 0
+            | yDiff == 0 && xDiff < 0 = Radians pi
+            | otherwise = arctangent (yDiff / xDiff)
+        decideForX0 xDiff yDiff
+            | yDiff > 0 = Radians $  pi/2
+            | yDiff < 0 = Radians $ -pi/2
 
 
 -- | Calculate missing triangle side (Law of cosines)

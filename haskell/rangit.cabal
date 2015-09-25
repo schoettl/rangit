@@ -35,6 +35,8 @@ executable rangit
   build-depends:       base >=4.6 && <4.7
                      , rangit
                      , AC-Angle
+                     , aeson
+                     , bytestring
   hs-source-dirs:      executable
   default-language:    Haskell2010
   if flag(documentation)

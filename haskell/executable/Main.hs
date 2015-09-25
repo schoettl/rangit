@@ -1,5 +1,11 @@
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE FlexibleInstances #-}
+
 module Main where
 
+import Data.Angle
+import qualified Data.ByteString.Lazy.Char8 as BSL
+import Data.Aeson
 import Rangit.Train
 import Rangit.Drive
 
@@ -10,7 +16,21 @@ import Rangit.Drive
  - There can be an abitrary number of parts at the left side of the power car.
  -}
 
+instance ToJSON (Radians Float) where
+    toJSON (Radians x) = object [ "radians" .= x ] -- a function value instead of object does not exist
 
+instance ToJSON Position where
+    toJSON (Position x y) = object [ "x" .= x , "y" .= y ]
+
+instance ToJSON Part where
+    toJSON (Part position angle leftLength rightLength) =
+        object [ "position"    .= position
+               , "angle"       .= angle
+               , "leftLength"  .= leftLength
+               , "rightLength" .= rightLength
+               ]
+
+data Command = Command Float Float
 
 -- user code --
 
@@ -19,4 +39,22 @@ myTrailer = Part origin 0 0 4
 
 myTrain = myTrailer : [myCar]
 
-main = return ()
+-- | Drive train reading from standard input and
+-- writing new positions to standard output.
+--
+-- 1. Read lines of input (each length and steer angle),
+-- 2. drive the train according to the input,
+-- 3. output new position as JSON.
+main = interact program
+
+program :: String -> String
+program input = unlines $
+    map (BSL.unpack . encode . toJSON . executeCommand myTrain) $
+    --map (show . executeCommand myTrain) $
+        (convertToCommands . map words . lines) input
+
+convertToCommands :: [[String]] -> [Command]
+convertToCommands = map (\ (x:a:_) -> Command (read x :: Float) (read a :: Float))
+
+executeCommand :: [Part] -> Command -> [Part]
+executeCommand ps (Command x a) = drive ps x (radians $ Degrees a)

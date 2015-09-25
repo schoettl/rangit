@@ -11,7 +11,7 @@ data Part = Part
     , partAngle       :: Radians Float -- ^ Angle between West-East (horizontal) line and Längstraverse
     , partLengthLeft  :: Float         -- ^ Length from the axis to the left hitch
     , partLengthRight :: Float         -- ^ Length from the axis to the right hitch. For every part this is the point of force application. It can also be negative to direct to the left side of the axis. This can be especially for the power car.
-    }
+    } deriving (Eq, Show)
 
 -- Wheelbase :: Float -- Radabstand
 -- CenterDistance :: Float -- Achsabstand
@@ -22,12 +22,19 @@ origin = Position 0 0
 
 -- partAngle will not be touched but the hitch position will be corrected!
 
-correctLeftPartsPositions :: [Part] -> [Part]
-correctLeftPartsPositions ps = foldr correctPosition [last ps] (init ps)
+-- | Fix positions of all parts except the right-most one.
+-- The inital train may have not correct positions of parts.
+-- Only the right-most car has a fix position. However the
+-- exact position of all other parts can be calculated given
+-- the angle, and the position of the car to the right.
+fixInitialPositions :: [Part] -- ^ Train for which positions should be fixed
+                    -> [Part] -- ^ Train with all correct positions
+fixInitialPositions ps = foldr correctPosition [last ps] (init ps)
     where correctPosition part result@(fix:_) =
             let new = calculatePosition part fix
             in new:result
 
+-- | Calculate position of a part based on the angle, and the position of the car to the right.
 calculatePosition :: Part -- ^ Part for which position shall be calculated
                   -> Part -- ^ Part right of with fixed position
                   -> Part -- ^ Part with newly calculated position
