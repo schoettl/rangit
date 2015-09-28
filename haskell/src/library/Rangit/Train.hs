@@ -1,6 +1,7 @@
 module Rangit.Train where
 
 import Data.Angle
+import Text.Read
 
 -- | A position in the map.
 data Position = Position { xPos, yPos :: Float } deriving (Eq, Show)

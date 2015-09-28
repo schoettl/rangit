@@ -45,12 +45,13 @@ myTrain = myTrailer : [myCar]
 -- 1. Read lines of input (each length and steer angle),
 -- 2. drive the train according to the input,
 -- 3. output new position as JSON.
-main = interact program
+main = do
+    putStrLn $ encodeAsJson myTrain
+    interact program
 
 program :: String -> String
 program input = unlines $
-    map (BSL.unpack . encode . toJSON . executeCommand myTrain) $
-    --map (show . executeCommand myTrain) $
+    map (formatOutput . executeCommand myTrain) $
         (convertToCommands . map words . lines) input
 
 convertToCommands :: [[String]] -> [Command]
@@ -58,3 +59,10 @@ convertToCommands = map (\ (x:a:_) -> Command (read x :: Float) (read a :: Float
 
 executeCommand :: [Part] -> Command -> [Part]
 executeCommand ps (Command x a) = drive ps x (radians $ Degrees a)
+
+formatOutput :: [Part] -> String
+formatOutput = encodeAsJson
+--formatOutput = show
+
+encodeAsJson :: [Part] -> String
+encodeAsJson = BSL.unpack . encode . toJSON

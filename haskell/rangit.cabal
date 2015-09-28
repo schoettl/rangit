@@ -21,23 +21,40 @@ flag documentation
 library
   exposed-modules:     Rangit.Train
                      , Rangit.Drive
-  build-depends:       base >=4.6 && <4.7
+  build-depends:       base
                      , AC-Angle
-  hs-source-dirs:      library
+  hs-source-dirs:      src/library/
   default-language:    Haskell2010
   if flag(documentation)
     build-depends:     hscolour == 1.20.*
 
-executable rangit
+executable simulator
   main-is:             Main.hs
   -- other-modules:       
   -- other-extensions:    
-  build-depends:       base >=4.6 && <4.7
+  build-depends:       base
                      , rangit
                      , AC-Angle
                      , aeson
                      , bytestring
-  hs-source-dirs:      executable
+  hs-source-dirs:      src/simulator/
+  default-language:    Haskell2010
+  if flag(documentation)
+    build-depends:     hscolour == 1.20.*
+
+executable visualization
+  main-is:             Main.hs
+  -- other-modules:       
+  -- other-extensions:    
+  build-depends:       base
+                     , rangit
+                     , AC-Angle
+                     , aeson
+                     , bytestring
+                     , cairo
+                     , gtk3
+                     , mtl
+  hs-source-dirs:      src/visualization/
   default-language:    Haskell2010
   if flag(documentation)
     build-depends:     hscolour == 1.20.*

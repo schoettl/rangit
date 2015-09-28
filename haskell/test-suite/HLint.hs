@@ -4,7 +4,7 @@ import Language.Haskell.HLint (hlint)
 import System.Exit (exitFailure, exitSuccess)
 
 arguments :: [String]
-arguments = ["library", "executable"]
+arguments = ["src"]
 
 main :: IO ()
 main = do
