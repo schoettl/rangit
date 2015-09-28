@@ -1,18 +1,17 @@
 module Rangit.Train where
 
-import Data.Angle
 import Text.Read
 
 -- | A position in the map.
-data Position = Position { xPos, yPos :: Float } deriving (Eq, Show)
+data Position = Position { xPos, yPos :: Float } deriving (Eq, Show, Read)
 
 -- | Part of a vehicle train. It has one axis.
 data Part = Part
-    { partPosition    :: Position      -- ^ Position of the right hitch
-    , partAngle       :: Radians Float -- ^ Angle between West-East (horizontal) line and Längstraverse
-    , partLengthLeft  :: Float         -- ^ Length from the axis to the left hitch
-    , partLengthRight :: Float         -- ^ Length from the axis to the right hitch. For every part this is the point of force application. It can also be negative to direct to the left side of the axis. This can be especially for the power car.
-    } deriving (Eq, Show)
+    { partPosition    :: Position -- ^ Position of the right hitch
+    , partAngle       :: Float    -- ^ Angle between West-East (horizontal) line and Längstraverse
+    , partLengthLeft  :: Float    -- ^ Length from the axis to the left hitch
+    , partLengthRight :: Float    -- ^ Length from the axis to the right hitch. For every part this is the point of force application. It can also be negative to direct to the left side of the axis. This can be especially for the power car.
+    } deriving (Eq, Show, Read)
 
 -- Wheelbase :: Float -- Radabstand
 -- CenterDistance :: Float -- Achsabstand
@@ -53,5 +52,5 @@ calculateCenterPosition part = calculatePositionOnPart part $ -partLengthRight p
 calculatePositionOnPart :: Part -> Float -> Position
 calculatePositionOnPart part = calculatePositionByPointAngleLength (partPosition part) (partAngle part)
 
-calculatePositionByPointAngleLength :: Position -> Radians Float -> Float -> Position
-calculatePositionByPointAngleLength (Position x y) a l = Position (x + l * cosine a) (y + l * sine a)
+calculatePositionByPointAngleLength :: Position -> Float -> Float -> Position
+calculatePositionByPointAngleLength (Position x y) a l = Position (x + l * cos a) (y + l * sin a)

@@ -16,9 +16,6 @@ import Rangit.Drive
  - There can be an abitrary number of parts at the left side of the power car.
  -}
 
-instance ToJSON (Radians Float) where
-    toJSON (Radians x) = object [ "radians" .= x ] -- a function value instead of object does not exist
-
 instance ToJSON Position where
     toJSON (Position x y) = object [ "x" .= x , "y" .= y ]
 
@@ -58,11 +55,14 @@ convertToCommands :: [[String]] -> [Command]
 convertToCommands = map (\ (x:a:_) -> Command (read x :: Float) (read a :: Float))
 
 executeCommand :: [Part] -> Command -> [Part]
-executeCommand ps (Command x a) = drive ps x (radians $ Degrees a)
+executeCommand ps (Command x a) = drive ps x (degreesToRadians a)
 
 formatOutput :: [Part] -> String
-formatOutput = encodeAsJson
---formatOutput = show
+--formatOutput = encodeAsJson
+formatOutput = show
 
 encodeAsJson :: [Part] -> String
 encodeAsJson = BSL.unpack . encode . toJSON
+
+degreesToRadians :: Float -> Float
+degreesToRadians a = let Radians x = radians $ Degrees a in x

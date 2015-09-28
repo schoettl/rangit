@@ -5,7 +5,6 @@ import Test.QuickCheck
 import Test.Utils
 import Rangit.Train
 import Rangit.Drive
-import Data.Angle
 
 spec :: Spec
 spec = do
@@ -14,7 +13,7 @@ spec = do
         context "move one part" $ do
             let powerCar = Part origin 0 0 1
                 targetPosition = Position 1 1
-                newAngle = arctangent $ 1 / (1 + 1) -- 1 from dimensions of power car
+                newAngle = atan $ 1 / (1 + 1) -- 1 from dimensions of power car
                 ([pc], lh) = movePart powerCar ([], targetPosition)
             it "updates the position" $ do
                 partPosition pc `shouldBe` targetPosition
@@ -27,8 +26,8 @@ spec = do
         it "works for 0°" $ do
             calculateAngleByArcTan 1 0 `shouldBe` 0
         it "works for 90°" $ do
-            calculateAngleByArcTan 0 1 `shouldBe` Radians (pi/2)
+            calculateAngleByArcTan 0 1 `shouldBe` (pi/2)
         it "works for 180°" $ do
-            calculateAngleByArcTan (-1) 0 `shouldBe` Radians pi
+            calculateAngleByArcTan (-1) 0 `shouldBe` pi
         it "works for -90°" $ do
-            calculateAngleByArcTan 0 (-1) `shouldBe` Radians (-pi/2)
+            calculateAngleByArcTan 0 (-1) `shouldBe` (-pi/2)

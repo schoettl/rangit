@@ -28,7 +28,7 @@ library
   if flag(documentation)
     build-depends:     hscolour == 1.20.*
 
-executable simulator
+executable simulation
   main-is:             Main.hs
   -- other-modules:       
   -- other-extensions:    
@@ -37,7 +37,7 @@ executable simulator
                      , AC-Angle
                      , aeson
                      , bytestring
-  hs-source-dirs:      src/simulator/
+  hs-source-dirs:      src/simulation/
   default-language:    Haskell2010
   if flag(documentation)
     build-depends:     hscolour == 1.20.*
@@ -54,6 +54,7 @@ executable visualization
                      , cairo
                      , gtk3
                      , mtl
+                     , reference
   hs-source-dirs:      src/visualization/
   default-language:    Haskell2010
   if flag(documentation)

@@ -27,7 +27,7 @@ spec = do
         let sqrt2 = sqrt 2
         context "positive right length" $ do
             let testPart :: Float -> Part
-                testPart angle = Part origin (Radians angle) 1 2
+                testPart angle = Part origin angle 1 2
             it "works for a simple case" $ do
                 calculateLeftHitchPosition (testPart 0) @=~? Position (-3) 0
             it "works for non-origin positioned part" $ do
@@ -40,7 +40,7 @@ spec = do
                 calculateLeftHitchPosition (testPart (-pi/4)) @=~? Position (-3/sqrt2) (3/sqrt2)
         context "negative right length" $ do
             let testPartWithNegativeRightLength :: Float -> Part
-                testPartWithNegativeRightLength angle = Part origin (Radians angle) 5 (-2)
+                testPartWithNegativeRightLength angle = Part origin angle 5 (-2)
             it "works for a simple case" $ do
                 calculateLeftHitchPosition (testPartWithNegativeRightLength 0) @=~? Position (-3) 0
             it "works with a positive angle" $ do
@@ -61,7 +61,7 @@ spec = do
         let sqrt2 = sqrt 2
         context "posive right length" $ do
             let testPart :: Float -> Part
-                testPart angle = Part origin (Radians angle) undefined 3
+                testPart angle = Part origin angle undefined 3
             it "works for a simple case" $ do
                 calculateCenterPosition (testPart 0) `shouldBe` Position (-3) 0
             it "works for non-origin positioned part" $ do
@@ -74,7 +74,7 @@ spec = do
                 calculateCenterPosition (testPart (-pi/4)) @=~? Position (-3/sqrt2) (3/sqrt2)
         context "negative right length" $ do
             let testPartWithNegativeRightLength :: Float -> Part
-                testPartWithNegativeRightLength angle = Part origin (Radians angle) undefined (-3)
+                testPartWithNegativeRightLength angle = Part origin angle undefined (-3)
             it "works for a simple case" $ do
                 calculateCenterPosition (testPartWithNegativeRightLength 0) `shouldBe` Position 3 0
             it "works with a positive angle" $ do
@@ -85,9 +85,9 @@ spec = do
                 calculateCenterPosition (testPartWithNegativeRightLength (-pi/4)) @=~? Position (3/sqrt2) (-3/sqrt2)
 
     describe "fixInitialPositions" $ do
-        let powerCar = Part origin (Radians ( pi/4)) 1 1
-            trailer1 = Part origin (Radians (-pi/4)) 0 2
-            trailer2 = Part origin (Radians 0)       0 0
+        let powerCar = Part origin ( pi/4) 1 1
+            trailer1 = Part origin (-pi/4) 0 2
+            trailer2 = Part origin 0       0 0
             t2:t1:pc:[] = fixInitialPositions [trailer2, trailer1, powerCar]
         it "works on a train with just one part" $ do
             fixInitialPositions [powerCar] `shouldBe` [powerCar]
