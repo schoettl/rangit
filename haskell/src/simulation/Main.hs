@@ -46,7 +46,7 @@ myTrain = myTrailer : [myCar]
 main :: IO ()
 main = do
     --hSetBuffering stdin NoBuffering
-    putStrLn $ encodeAsJson myTrain
+    putStrLn $ formatOutput myTrain
     interact program
 
 program :: String -> String
