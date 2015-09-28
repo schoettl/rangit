@@ -3,6 +3,7 @@
 
 module Main where
 
+import System.IO
 import Data.Angle
 import qualified Data.ByteString.Lazy.Char8 as BSL
 import Data.Aeson
@@ -42,7 +43,9 @@ myTrain = myTrailer : [myCar]
 -- 1. Read lines of input (each length and steer angle),
 -- 2. drive the train according to the input,
 -- 3. output new position as JSON.
+main :: IO ()
 main = do
+    --hSetBuffering stdin NoBuffering
     putStrLn $ encodeAsJson myTrain
     interact program
 
