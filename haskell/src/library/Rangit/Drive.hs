@@ -7,22 +7,28 @@ stepLength = 0.01
 
 -- | API command: drive the train a distance at a steer angle.
 drive :: [Part] -- ^ Train to be driven
-      -> Float  -- ^ Distance to be driven
+      -> Float  -- ^ Distance to be driven (can be positive or negative)
       -> Float  -- ^ Steer angle between middle line and direction line, counter-clockwise
       -> [Part] -- ^ Train at the new position
-drive train len angle
-    | len <= 0  = train
-    | otherwise = drive updated (len - stepLength) angle
-        where updated = moveTrain train angle
+drive train len = driveSignum train (signum len) len
+
+driveSignum :: [Part] -> Float -> Float -> Float -> [Part]
+driveSignum train sign len angle
+    | sign > 0 = if len > 0 then driveRemaining $ len - stepLength else train
+    | sign < 0 = if len < 0 then driveRemaining $ len + stepLength else train
+    where
+        driveRemaining len = driveSignum updated sign len angle
+        updated = moveTrain train sign angle
 
 -- | Move the train one step length.
 moveTrain :: [Part] -- ^ Train to be moved
+          -> Float
           -> Float  -- ^ Steer angle for the power car
           -> [Part] -- ^ Moved train
-moveTrain ps a =
+moveTrain ps sign a =
     let point = partPosition $ last ps
         angle = a + partAngle (last ps)
-        target = calculatePositionByPointAngleLength point angle stepLength
+        target = calculatePositionByPointAngleLength point angle (sign * stepLength)
     in fst $ foldr movePart ([], target) ps
 
 -- | Move one part of the train by moving the right hitch position to the target position.
