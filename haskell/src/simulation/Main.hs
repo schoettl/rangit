@@ -33,9 +33,9 @@ data Command = Command Float Float
 -- user code --
 
 myCar = Part origin 0 1 5
-myTrailer = Part origin 0 0 4
+myTrailer = Part origin 1 0 4
 
-myTrain = myTrailer : [myCar]
+myTrain = fixInitialPositions $ myTrailer : [myCar]
 
 -- | Drive train reading from standard input and
 -- writing new positions to standard output.
@@ -44,15 +44,16 @@ myTrain = myTrailer : [myCar]
 -- 2. drive the train according to the input,
 -- 3. output new position as JSON.
 main :: IO ()
-main = do
-    --hSetBuffering stdin NoBuffering
-    putStrLn $ formatOutput myTrain
-    interact program
+main = interact program
 
 program :: String -> String
 program input = unlines $
-    map (formatOutput . executeCommand myTrain) $
-        (convertToCommands . map words . lines) input
+    map formatOutput $
+        processCommands myTrain $
+            (convertToCommands . map words . lines) input
+
+processCommands :: [Part] -> [Command] -> [[Part]]
+processCommands ps cmds = scanl executeCommand ps cmds
 
 convertToCommands :: [[String]] -> [Command]
 convertToCommands = map (\ (x:a:_) -> Command (read x :: Float) (read a :: Float))
