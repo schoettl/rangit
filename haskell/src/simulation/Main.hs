@@ -53,7 +53,7 @@ program input = unlines $
             (convertToCommands . map words . lines) input
 
 processCommands :: [Part] -> [Command] -> [[Part]]
-processCommands ps cmds = scanl executeCommand ps cmds
+processCommands = scanl executeCommand
 
 convertToCommands :: [[String]] -> [Command]
 convertToCommands = map (\ (x:a:_) -> Command (read x :: Float) (read a :: Float))

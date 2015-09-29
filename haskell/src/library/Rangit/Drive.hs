@@ -10,19 +10,25 @@ drive :: [Part] -- ^ Train to be driven
       -> Float  -- ^ Distance to be driven (can be positive or negative)
       -> Float  -- ^ Steer angle between middle line and direction line, counter-clockwise
       -> [Part] -- ^ Train at the new position
-drive train len = driveSignum train (signum len) len
+drive train len = driveInDirection train (signum len) (abs len)
 
-driveSignum :: [Part] -> Float -> Float -> Float -> [Part]
-driveSignum train sign len angle
-    | sign > 0 = if len > 0 then driveRemaining $ len - stepLength else train
-    | sign < 0 = if len < 0 then driveRemaining $ len + stepLength else train
+-- | Drive the train a distance at a steer angle.
+-- The sign of the distance is needed for the recursion.
+driveInDirection :: [Part] -- ^ Train to be driven
+                 -> Float  -- ^ Sign of distance
+                 -> Float  -- ^ Absolute distance to be driven
+                 -> Float  -- ^ Steer angle between middle line and direction line, counter-clockwise
+                 -> [Part] -- ^ Train at the new position
+driveInDirection train sign len angle
+    | len <= 0  = train
+    | otherwise = driveRemaining $ len - stepLength
     where
-        driveRemaining len = driveSignum updated sign len angle
+        driveRemaining len = driveInDirection updated sign len angle
         updated = moveTrain train sign angle
 
 -- | Move the train one step length.
 moveTrain :: [Part] -- ^ Train to be moved
-          -> Float
+          -> Float  -- ^ Sign for step length denoting the direction
           -> Float  -- ^ Steer angle for the power car
           -> [Part] -- ^ Moved train
 moveTrain ps sign a =
