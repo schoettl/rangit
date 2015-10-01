@@ -3,18 +3,18 @@ module Rangit.Train where
 import Text.Read
 
 -- | A position in the map.
-data Position = Position { xPos, yPos :: Float } deriving (Eq, Show, Read)
+data Position = Position { xPos, yPos :: Double } deriving (Eq, Show, Read)
 
 -- | Part of a vehicle train. It has one axis.
 data Part = Part
     { partPosition    :: Position -- ^ Position of the right hitch
-    , partAngle       :: Float    -- ^ Angle between West-East (horizontal) line and Längstraverse
-    , partLengthLeft  :: Float    -- ^ Length from the axis to the left hitch
-    , partLengthRight :: Float    -- ^ Length from the axis to the right hitch. For every part this is the point of force application. It can also be negative to direct to the left side of the axis. This can be especially for the power car.
+    , partAngle       :: Double    -- ^ Angle between West-East (horizontal) line and Längstraverse
+    , partLengthLeft  :: Double    -- ^ Length from the axis to the left hitch
+    , partLengthRight :: Double    -- ^ Length from the axis to the right hitch. For every part this is the point of force application. It can also be negative to direct to the left side of the axis. This can be especially for the power car.
     } deriving (Eq, Show, Read)
 
--- Wheelbase :: Float -- Radabstand
--- CenterDistance :: Float -- Achsabstand
+-- Wheelbase :: Double -- Radabstand
+-- CenterDistance :: Double -- Achsabstand
 
 origin = Position 0 0
 
@@ -40,7 +40,7 @@ calculatePosition :: Part -- ^ Part for which position shall be calculated
                   -> Part -- ^ Part with newly calculated position
 calculatePosition part fix = part { partPosition = calculateLeftHitchPosition fix }
 
-partLength :: Part -> Float
+partLength :: Part -> Double
 partLength p = partLengthLeft p + partLengthRight p
 
 calculateLeftHitchPosition :: Part -> Position
@@ -49,8 +49,8 @@ calculateLeftHitchPosition part = calculatePositionOnPart part $ -partLength par
 calculateCenterPosition :: Part -> Position
 calculateCenterPosition part = calculatePositionOnPart part $ -partLengthRight part
 
-calculatePositionOnPart :: Part -> Float -> Position
+calculatePositionOnPart :: Part -> Double -> Position
 calculatePositionOnPart part = calculatePositionByPointAngleLength (partPosition part) (partAngle part)
 
-calculatePositionByPointAngleLength :: Position -> Float -> Float -> Position
+calculatePositionByPointAngleLength :: Position -> Double -> Double -> Position
 calculatePositionByPointAngleLength (Position x y) a l = Position (x + l * cos a) (y + l * sin a)

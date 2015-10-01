@@ -10,7 +10,6 @@ import Data.Reference
 import Data.Angle
 import Rangit.Train
 import Rangit.Drive
-import Debug.Trace
 import Control.Monad
 import System.Console.Docopt
 
@@ -104,7 +103,7 @@ drawPart ps p = do
     let wheelbase = calculateNiceWheelbase ps
     drawAxis wheelbase p
 
-drawAxis :: Float -> Part -> Render ()
+drawAxis :: Double -> Part -> Render ()
 drawAxis wheelbase p = do
     setSourceRGB 1 1 1
     setLineWidth 2
@@ -127,10 +126,10 @@ positionToPair p = (realToFrac $ xPos p, realToFrac $ yPos p)
 scaleAndOffset :: (Double, Double) -> (Double, Double)
 scaleAndOffset (x, y) = let factor = 10 in (factor*x + 200, factor*y + 200)
 
-calculateNiceWheelbase :: [Part] -> Float
+calculateNiceWheelbase :: [Part] -> Double
 calculateNiceWheelbase ps = 0.5 * partLength (last ps)
 
-calculatePerpendicularLine :: Position -> Float -> Float -> (Position, Position)
-calculatePerpendicularLine centerPoint lineLength angle = ( calcPoint (+), calcPoint (-)) where
+calculatePerpendicularLine :: Position -> Double -> Double -> (Position, Position)
+calculatePerpendicularLine centerPoint lineLength angle = (calcPoint (+), calcPoint (-)) where
     halfLength = lineLength / 2
-    calcPoint addOrSubtr = calculatePositionByPointAngleLength centerPoint (angle `addOrSubtr` pi/2) halfLength
+    calcPoint addOrSubtr = calculatePositionByPointAngleLength centerPoint (angle `addOrSubtr` (pi/2)) halfLength

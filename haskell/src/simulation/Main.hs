@@ -29,7 +29,7 @@ instance ToJSON Part where
                , "rightLength" .= rightLength
                ]
 
-data Command = Command Float Float
+data Command = Command Double Double
 
 -- user code --
 
@@ -57,7 +57,7 @@ processCommands :: [Part] -> [Command] -> [[Part]]
 processCommands = scanl executeCommand
 
 convertToCommands :: [[String]] -> [Command]
-convertToCommands = map (\ (x:a:_) -> Command (read x :: Float) (read a :: Float))
+convertToCommands = map (\ (x:a:_) -> Command (read x :: Double) (read a :: Double))
 
 executeCommand :: [Part] -> Command -> [Part]
 executeCommand ps (Command x a) = drive ps x (degreesToRadians a)
@@ -69,5 +69,5 @@ formatOutput = show
 encodeAsJson :: [Part] -> String
 encodeAsJson = BSL.unpack . encode . toJSON
 
-degreesToRadians :: Float -> Float
+degreesToRadians :: Double -> Double
 degreesToRadians a = let Radians x = radians $ Degrees a in x

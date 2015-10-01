@@ -11,7 +11,7 @@ spec = do
 
     describe "AlmostEq from Test.Utils" $ do
         it "compares to floats with accuracy of about 1e-4" $ do
-            pi @=~? (3.14150000 :: Float)
+            pi @=~? (3.14150000 :: Double)
 
     describe "origin" $ do
         it "must be the origin (0, 0)" $ do
@@ -26,7 +26,7 @@ spec = do
     describe "calculateLeftHitchPosition" $ do
         let sqrt2 = sqrt 2
         context "positive right length" $ do
-            let testPart :: Float -> Part
+            let testPart :: Double -> Part
                 testPart angle = Part origin angle 1 2
             it "works for a simple case" $ do
                 calculateLeftHitchPosition (testPart 0) @=~? Position (-3) 0
@@ -39,7 +39,7 @@ spec = do
             it "works with a negative angle" $ do
                 calculateLeftHitchPosition (testPart (-pi/4)) @=~? Position (-3/sqrt2) (3/sqrt2)
         context "negative right length" $ do
-            let testPartWithNegativeRightLength :: Float -> Part
+            let testPartWithNegativeRightLength :: Double -> Part
                 testPartWithNegativeRightLength angle = Part origin angle 5 (-2)
             it "works for a simple case" $ do
                 calculateLeftHitchPosition (testPartWithNegativeRightLength 0) @=~? Position (-3) 0
@@ -60,7 +60,7 @@ spec = do
     describe "calculateCenterPosition" $ do
         let sqrt2 = sqrt 2
         context "posive right length" $ do
-            let testPart :: Float -> Part
+            let testPart :: Double -> Part
                 testPart angle = Part origin angle undefined 3
             it "works for a simple case" $ do
                 calculateCenterPosition (testPart 0) `shouldBe` Position (-3) 0
@@ -73,7 +73,7 @@ spec = do
             it "works with a negative angle" $ do
                 calculateCenterPosition (testPart (-pi/4)) @=~? Position (-3/sqrt2) (3/sqrt2)
         context "negative right length" $ do
-            let testPartWithNegativeRightLength :: Float -> Part
+            let testPartWithNegativeRightLength :: Double -> Part
                 testPartWithNegativeRightLength angle = Part origin angle undefined (-3)
             it "works for a simple case" $ do
                 calculateCenterPosition (testPartWithNegativeRightLength 0) `shouldBe` Position 3 0

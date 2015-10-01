@@ -7,17 +7,17 @@ stepLength = 0.01
 
 -- | API command: drive the train a distance at a steer angle.
 drive :: [Part] -- ^ Train to be driven
-      -> Float  -- ^ Distance to be driven (can be positive or negative)
-      -> Float  -- ^ Steer angle between middle line and direction line, counter-clockwise
+      -> Double  -- ^ Distance to be driven (can be positive or negative)
+      -> Double  -- ^ Steer angle between middle line and direction line, counter-clockwise
       -> [Part] -- ^ Train at the new position
 drive train len = driveInDirection train (signum len) (abs len)
 
 -- | Drive the train a distance at a steer angle.
 -- The sign of the distance is needed for the recursion.
 driveInDirection :: [Part] -- ^ Train to be driven
-                 -> Float  -- ^ Sign of distance
-                 -> Float  -- ^ Absolute distance to be driven
-                 -> Float  -- ^ Steer angle between middle line and direction line, counter-clockwise
+                 -> Double  -- ^ Sign of distance
+                 -> Double  -- ^ Absolute distance to be driven
+                 -> Double  -- ^ Steer angle between middle line and direction line, counter-clockwise
                  -> [Part] -- ^ Train at the new position
 driveInDirection train sign len angle
     | len <= 0  = train
@@ -28,8 +28,8 @@ driveInDirection train sign len angle
 
 -- | Move the train one step length.
 moveTrain :: [Part] -- ^ Train to be moved
-          -> Float  -- ^ Sign for step length denoting the direction
-          -> Float  -- ^ Steer angle for the power car
+          -> Double  -- ^ Sign for step length denoting the direction
+          -> Double  -- ^ Steer angle for the power car
           -> [Part] -- ^ Moved train
 moveTrain ps sign a =
     let point = partPosition $ last ps
@@ -50,15 +50,15 @@ movePart part (ps, target) =
     in (part { partPosition = target, partAngle = absAngle } : ps, leftHitch)
 
 -- | Calculate an angle using arctan given dx and dy.
-calculateAngleByArcTan :: Float -- ^ Delta x
-                       -> Float -- ^ Delta y
-                       -> Float -- ^ Angle between horizontal line and line defined by dx and dy (counter-clockwise)
+calculateAngleByArcTan :: Double -- ^ Delta x
+                       -> Double -- ^ Delta y
+                       -> Double -- ^ Angle between horizontal line and line defined by dx and dy (counter-clockwise)
 calculateAngleByArcTan = flip atan2
 
 -- | Calculate missing triangle side (Law of cosines)
---calculateMissingTriangleSideA :: Radians Float -> Float -> Float -> Float
+--calculateMissingTriangleSideA :: Radians Double -> Double -> Double -> Double
 --calculateMissingTriangleSideA alpha b c = sqrt $ b^2 + c^2 + 2*b*c*cosine alpha
 
 -- | Calculate missing angle in triangle (Law of sines)
---calculateMissingAngleAlpha :: Radians Float -> Float -> Float -> Radians Float
+--calculateMissingAngleAlpha :: Radians Double -> Double -> Double -> Radians Double
 --calculateMissingAngleAlpha beta a b = arcsine $ a * sine beta / b
