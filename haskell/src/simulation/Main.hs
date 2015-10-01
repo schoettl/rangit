@@ -9,6 +9,7 @@ import qualified Data.ByteString.Lazy.Char8 as BSL
 import Data.Aeson
 import Rangit.Train
 import Rangit.Drive
+import System.Console.Docopt
 
 {- | Later module description
  - All length and position measures are in meter.

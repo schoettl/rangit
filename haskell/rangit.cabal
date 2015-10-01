@@ -37,6 +37,7 @@ executable simulation
                      , AC-Angle
                      , aeson
                      , bytestring
+                     , docopt
   hs-source-dirs:      src/simulation/
   default-language:    Haskell2010
   if flag(documentation)
@@ -55,6 +56,7 @@ executable visualization
                      , gtk3
                      , mtl
                      , reference
+                     , docopt
   hs-source-dirs:      src/visualization/
   default-language:    Haskell2010
   if flag(documentation)

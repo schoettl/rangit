@@ -12,6 +12,7 @@ import Rangit.Train
 import Rangit.Drive
 import Debug.Trace
 import Control.Monad
+import System.Console.Docopt
 
 -- | File descriptor: 0 = stdin
 stdin :: FD 
