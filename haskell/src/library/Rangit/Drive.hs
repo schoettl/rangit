@@ -43,10 +43,11 @@ movePart :: Part               -- ^ Current part to be moved
          -> ([Part], Position) -- ^ Moved parts including current one and new target position i. e. position of current part's left hitch
 movePart part (ps, target) =
     let center = calculateCenterPosition part
-        yDiff = yPos target - yPos center
         xDiff = xPos target - xPos center
+        yDiff = yPos target - yPos center
         absAngle = calculateAngleByArcTan xDiff yDiff
-    in (part { partPosition = target, partAngle = absAngle } : ps, calculateLeftHitchPosition part)
+        leftHitch = calculateLeftHitchPosition part
+    in (part { partPosition = target, partAngle = absAngle } : ps, leftHitch)
 
 -- | Calculate an angle using arctan given dx and dy.
 calculateAngleByArcTan :: Float -- ^ Delta x
