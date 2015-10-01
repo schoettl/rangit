@@ -49,19 +49,10 @@ movePart part (ps, target) =
     in (part { partPosition = target, partAngle = absAngle } : ps, calculateLeftHitchPosition part)
 
 -- | Calculate an angle using arctan given dx and dy.
-calculateAngleByArcTan :: Float -> Float -> Float
-calculateAngleByArcTan xDiff yDiff = if xDiff /= 0
-    then decideForY  xDiff yDiff
-    else decideForX0 xDiff yDiff
-    where
-        decideForY xDiff yDiff
-            | yDiff == 0 && xDiff > 0 = 0
-            | yDiff == 0 && xDiff < 0 = pi
-            | otherwise = atan (yDiff / xDiff)
-        decideForX0 xDiff yDiff
-            | yDiff > 0 = pi/2
-            | yDiff < 0 = -pi/2
-
+calculateAngleByArcTan :: Float -- ^ Delta x
+                       -> Float -- ^ Delta y
+                       -> Float -- ^ Angle between horizontal line and line defined by dx and dy (counter-clockwise)
+calculateAngleByArcTan = flip atan2
 
 -- | Calculate missing triangle side (Law of cosines)
 --calculateMissingTriangleSideA :: Radians Float -> Float -> Float -> Float
