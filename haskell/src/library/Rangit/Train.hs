@@ -8,9 +8,9 @@ data Position = Position { xPos, yPos :: Double } deriving (Eq, Show, Read)
 -- | Part of a vehicle train. It has one axis.
 data Part = Part
     { partPosition    :: Position -- ^ Position of the right hitch
-    , partAngle       :: Double    -- ^ Angle between West-East (horizontal) line and Längstraverse
-    , partLengthLeft  :: Double    -- ^ Length from the axis to the left hitch
-    , partLengthRight :: Double    -- ^ Length from the axis to the right hitch. For every part this is the point of force application. It can also be negative to direct to the left side of the axis. This can be especially for the power car.
+    , partAngle       :: Double   -- ^ Angle between West-East (horizontal) line and Längstraverse
+    , partLengthLeft  :: Double   -- ^ Length from the axis to the left hitch
+    , partLengthRight :: Double   -- ^ Length from the axis to the right hitch. For every part this is the point of force application. It can also be negative to direct to the left side of the axis. This can be especially for the power car.
     } deriving (Eq, Show, Read)
 
 -- Wheelbase :: Double -- Radabstand

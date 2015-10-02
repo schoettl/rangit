@@ -7,17 +7,17 @@ stepLength = 0.01
 
 -- | API command: drive the train a distance at a steer angle.
 drive :: [Part] -- ^ Train to be driven
-      -> Double  -- ^ Distance to be driven (can be positive or negative)
-      -> Double  -- ^ Steer angle between middle line and direction line, counter-clockwise
+      -> Double -- ^ Distance to be driven (can be positive or negative)
+      -> Double -- ^ Steer angle between middle line and direction line, counter-clockwise
       -> [Part] -- ^ Train at the new position
 drive train len = driveInDirection train (signum len) (abs len)
 
 -- | Drive the train a distance at a steer angle.
 -- The sign of the distance is needed for the recursion.
 driveInDirection :: [Part] -- ^ Train to be driven
-                 -> Double  -- ^ Sign of distance
-                 -> Double  -- ^ Absolute distance to be driven
-                 -> Double  -- ^ Steer angle between middle line and direction line, counter-clockwise
+                 -> Double -- ^ Sign of distance
+                 -> Double -- ^ Absolute distance to be driven
+                 -> Double -- ^ Steer angle between middle line and direction line, counter-clockwise
                  -> [Part] -- ^ Train at the new position
 driveInDirection train sign len angle
     | len <= 0  = train
@@ -28,8 +28,8 @@ driveInDirection train sign len angle
 
 -- | Move the train one step length.
 moveTrain :: [Part] -- ^ Train to be moved
-          -> Double  -- ^ Sign for step length denoting the direction
-          -> Double  -- ^ Steer angle for the power car
+          -> Double -- ^ Sign for step length denoting the direction
+          -> Double -- ^ Steer angle for the power car
           -> [Part] -- ^ Moved train
 moveTrain ps sign a =
     let point = partPosition $ last ps
