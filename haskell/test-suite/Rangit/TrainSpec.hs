@@ -11,7 +11,7 @@ spec = do
 
     describe "AlmostEq from Test.Utils" $ do
         it "compares to floats with accuracy of about 1e-4" $ do
-            pi @=~? (3.14150000 :: Double)
+            pi @=~? (3.14150000 :: Float)
 
     describe "origin" $ do
         it "must be the origin (0, 0)" $ do
