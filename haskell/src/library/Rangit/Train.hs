@@ -13,6 +13,8 @@ data Part = Part
     , partLengthRight :: Double    -- ^ Length from the axis to the right hitch. For every part this is the point of force application. It can also be negative to direct to the left side of the axis. This can be especially for the power car.
     } deriving (Eq, Show, Read)
 
+type Train = [Part]
+
 -- Wheelbase :: Double -- Radabstand
 -- CenterDistance :: Double -- Achsabstand
 
@@ -27,8 +29,8 @@ origin = Position 0 0
 -- Only the right-most car has a fix position. However the
 -- exact position of all other parts can be calculated given
 -- the angle, and the position of the car to the right.
-fixInitialPositions :: [Part] -- ^ Train for which positions should be fixed
-                    -> [Part] -- ^ Train with all correct positions
+fixInitialPositions :: Train -- ^ Train for which positions should be fixed
+                    -> Train -- ^ Train with all correct positions
 fixInitialPositions ps = foldr correctPosition [last ps] (init ps)
     where correctPosition part result@(fix:_) =
             let new = calculatePosition part fix

@@ -53,20 +53,20 @@ program input = unlines $
         processCommands myTrain $
             (convertToCommands . map words . lines) input
 
-processCommands :: [Part] -> [Command] -> [[Part]]
+processCommands :: Train -> [Command] -> [Train]
 processCommands = scanl executeCommand
 
 convertToCommands :: [[String]] -> [Command]
 convertToCommands = map (\ (x:a:_) -> Command (read x :: Double) (read a :: Double))
 
-executeCommand :: [Part] -> Command -> [Part]
+executeCommand :: Train -> Command -> Train
 executeCommand ps (Command x a) = drive ps x (degreesToRadians a)
 
-formatOutput :: [Part] -> String
+formatOutput :: Train -> String
 --formatOutput = encodeAsJson
 formatOutput = show
 
-encodeAsJson :: [Part] -> String
+encodeAsJson :: Train -> String
 encodeAsJson = BSL.unpack . encode . toJSON
 
 degreesToRadians :: Double -> Double

@@ -26,7 +26,7 @@ inputReadInterval = 100
 main :: IO ()
 main = do
     list <- readInputBlocking
-    ref <- newRef list :: IO (IORef [[Part]])
+    ref <- newRef list :: IO (IORef [Train])
 
     initGUI
     window <- windowNew
@@ -58,10 +58,10 @@ main = do
 -- When this program is used in a pipe and this function is registerd with inputAdd and called by GTK main loop
 -- it is called once for each change in input stream. This means that for `vis <data` just one line is read and
 -- for `(cat data; cat -) | vis` a second line is read when the user inputs a new line.
-readInputLinewise :: IORef [[Part]] -> IO Bool
+readInputLinewise :: IORef [Train] -> IO Bool
 readInputLinewise ref = do
     input <- getLine
-    let parts = read input :: [Part]
+    let parts = read input :: Train
     list <- liftIO $ readRef ref
     let newList = list ++ [parts]
     writeRef ref newList
@@ -70,29 +70,29 @@ readInputLinewise ref = do
 
 -- | Read full input blocking.
 -- This can be used if all input is already there in a file.
-readInputBlocking :: IO [[Part]]
+readInputBlocking :: IO [Train]
 readInputBlocking = do
     input <- getContents
-    let list = map (read :: String -> [Part]) $ lines input
+    let list = map (read :: String -> Train) $ lines input
     mapM_ print list
     return list
 
-drawVisualization :: IORef [[Part]] -> Render ()
+drawVisualization :: IORef [Train] -> Render ()
 drawVisualization ref = do
     list <- liftIO $ readRef ref
     newList <- processList list
     liftIO $ writeRef ref newList
 
 -- | Process list of trains i.e. draw current one and return rest of list.
-processList :: [[Part]] -> Render [[Part]]
+processList :: [Train] -> Render [Train]
 processList []        = return []
 processList [ps]      = drawParts ps >> return [ps]
 processList (ps:rest) = drawParts ps >> return rest
 
-drawParts :: [Part] -> Render ()
+drawParts :: Train -> Render ()
 drawParts ps = mapM_ (drawPart ps) ps
 
-drawPart :: [Part] -> Part -> Render ()
+drawPart :: Train -> Part -> Render ()
 drawPart ps p = do
     setSourceRGB 0 1 1
     setLineWidth 5
@@ -126,7 +126,7 @@ positionToPair p = (xPos p, yPos p)
 scaleAndOffset :: (Double, Double) -> (Double, Double)
 scaleAndOffset (x, y) = let factor = 10 in (factor*x + 200, factor*y + 200)
 
-calculateNiceWheelbase :: [Part] -> Double
+calculateNiceWheelbase :: Train -> Double
 calculateNiceWheelbase ps = 0.5 * partLength (last ps)
 
 calculatePerpendicularLine :: Position -> Double -> Double -> (Position, Position)
