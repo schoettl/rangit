@@ -1,6 +1,6 @@
 {-# LANGUAGE FlexibleInstances #-}
 
-module Test.Utils (shouldAlmostBe, (@=~?)) where
+module Test.Utils (shouldAlmostBe) where
 
 import Test.HUnit as HU
 import Rangit.Train
@@ -28,6 +28,3 @@ shouldAlmostBe :: (Show a, AlmostEq a) => a -> a -> HU.Assertion
 actual `shouldAlmostBe` expected = actual =~ expected HU.@? assertionMsg
     where assertionMsg = "expected: " ++ show expected
                     ++ "\n but got: " ++ show actual
-
--- deprecated:
-x @=~? y = shouldAlmostBe x y

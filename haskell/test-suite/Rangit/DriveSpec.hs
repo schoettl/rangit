@@ -60,7 +60,7 @@ spec = do
             it "updates the position" $ do
                 partPosition pc `shouldBe` targetPosition
             it "updates the angle" $ do
-                partAngle pc @=~? newAngle
+                partAngle pc `shouldAlmostBe` newAngle
         context "move part from <90° to >90°" $ do
             let part = Part origin (pi/2) 0 1
                 targetPosition = Position (-1) 1

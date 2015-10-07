@@ -13,7 +13,7 @@ spec = do
 
     describe "euclidianDistance" $ do
         it "works correct for a simple test case" $ do
-            euclidianDistance (Position 0 0) (Position 1 1) @=~? sqrt 2
+            euclidianDistance (Position 0 0) (Position 1 1) `shouldAlmostBe` sqrt 2
 
     describe "weightedAngleDiffs" $ do
         it "weights angle differences with even exponents" $ do
