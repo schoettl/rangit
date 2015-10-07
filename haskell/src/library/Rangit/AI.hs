@@ -2,8 +2,18 @@ module Rangit.AI where
 
 import Rangit.Train
 import Rangit.Drive
+import Data.List
+import Data.Ord
 
 type DiscretePath = [Position]
+
+-- | Maximum steer angle of power car (for backup).
+maxSteerAngle :: Double
+maxSteerAngle = pi/4
+
+-- | Number of steer angle granularity one just one side.
+backupSteerGranularity :: Int
+backupSteerGranularity = 5
 
 -- | Calculate error by position and angle of power car and by angle of trailing cars.
 -- Angles of trailing cars are much more important than angle and position of power car.
@@ -19,13 +29,13 @@ calculateError a b = powerCarPositionDiffScaled + sum weightedAngleDiffs
         powerCarPositionDiffScaled = euclidianDistance (partPosition $ last a) (partPosition $ last b) / 0.5 * 2*pi -- normalisieren: abstand / schlechtest_annehmbarer_abstand = winkel_mean / schlechtest_annehmbarer_winkel_zb360
 
 -- | Calculate ideal train position for path.
-calculateTheoreticalTrain
+calculateIdealTrain
     :: DiscretePath -- ^ Path to fit train to
     -> Train        -- ^ Train to be fitted
     -> Train        -- ^ Ideal position of train
-calculateTheoreticalTrain path train = fixInitialPositions $ foldr f [newPowerCar] (init train)
+calculateIdealTrain path train = fixInitialPositions $ foldr f [newPowerCar] (init train)
     where
-        calcAngle = calculateAngleInPath path
+        calcAngle d = calculateAngleInPath path d - pi
         powerCar = last train
         newPowerCar = powerCar { partPosition = head path
                                , partAngle = calcAngle $ partLengthRight powerCar
@@ -36,10 +46,26 @@ calculateTheoreticalTrain path train = fixInitialPositions $ foldr f [newPowerCa
 
 -- | Backup train along the given path.
 backupTrain
-    :: Train        -- ^ Current train
-    -> DiscretePath -- ^ Path to backup train along
+    :: DiscretePath -- ^ Path to backup train along
+    -> Train        -- ^ Current train
     -> Train        -- ^ Best driven train
-backupTrain train path = []
+backupTrain [] train = train
+backupTrain path train = backupTrain (tail path) (calculateBestFittedTrain path train)
+
+-- | Move train so that it best fits the path.
+calculateBestFittedTrain
+    :: DiscretePath -- ^ Path to fit train to
+    -> Train        -- ^ Train to move
+    -> Train        -- ^ Best fitted train
+calculateBestFittedTrain path@(p:_) train =
+    let distanceToDrive = euclidianDistance (partPosition $ last train) p
+        idealTrain = calculateIdealTrain path train
+        steerAngles = map ((*(maxSteerAngle/fromIntegral backupSteerGranularity)) . fromIntegral) [-backupSteerGranularity..backupSteerGranularity]
+        trains = map (drive train (-distanceToDrive)) steerAngles
+        diffs = map (calculateError idealTrain) trains
+        bestTrainAndDiff :: (Double, Train)
+        bestTrainAndDiff = minimumBy (\ (x, _) (y, _) -> compare x y) $ zip diffs trains
+    in snd bestTrainAndDiff
 
 -- | Calculate angle in path at given distance from the start.
 calculateAngleInPath
@@ -62,4 +88,4 @@ weightAngleDiffs
     :: [Double] -- ^ Angle differences between two different positioned trains
     -> [Double] -- ^ Weighted angle differences
 weightAngleDiffs list = fst $ foldr f ([], 0) list
-    where f d (r, i) = (d ^ (2*i) : r, i+1)
+    where f d (r, i) = (d * 2^i : r, i+1)

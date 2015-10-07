@@ -1,6 +1,6 @@
 {-# LANGUAGE FlexibleInstances #-}
 
-module Test.Utils ((@=~?)) where
+module Test.Utils (shouldAlmostBe, (@=~?)) where
 
 import Test.HUnit as HU
 import Rangit.Train
@@ -24,8 +24,10 @@ instance AlmostEq (Radians Float) where
     Radians x =~ Radians y = x =~ y
  
 -- operator definiton for HSpec:
-(@=~?) :: (Show a, AlmostEq a) => a -> a -> HU.Assertion
-(@=~?) expected actual  = expected =~ actual HU.@? assertionMsg
-    where
-      assertionMsg = "Expected : " ++ show expected ++
-                     "\nActual   : " ++ show actual
+shouldAlmostBe :: (Show a, AlmostEq a) => a -> a -> HU.Assertion
+actual `shouldAlmostBe` expected = actual =~ expected HU.@? assertionMsg
+    where assertionMsg = "expected: " ++ show expected
+                    ++ "\n but got: " ++ show actual
+
+-- deprecated:
+x @=~? y = shouldAlmostBe x y
