@@ -20,8 +20,9 @@ backupTrain
     :: DiscretePath -- ^ Path to backup train along
     -> Train        -- ^ Current train
     -> Train        -- ^ Best driven train
-backupTrain [] train = train
-backupTrain path train = backupTrain (tail path) (snd $ backupTrainToFitPath0path train)
+backupTrain []   train = train
+backupTrain [_]  train = train
+backupTrain path train = backupTrain (tail path) (snd $ backupTrainToFitPath path train)
 
 -- | Move train to first waypoint so that it best fits the path.
 backupTrainToFitPath
@@ -38,7 +39,7 @@ backupTrainToFitPath path@(p:_) train =
         best :: (Double, Double, Train)
         best = minimumBy (\ (x, _, _) (y, _, _) -> compare x y) $ zip3 diffs steerAngles trains
         (_, bestSteerAngle, bestTrain) = best
-    in (Command distanceToDrive bestSteerAngle, bestTrain)
+    in (DriveCommand distanceToDrive bestSteerAngle, bestTrain)
 
 -- | Calculate error by position and angle of power car and by angle of trailing parts.
 -- Angles of trailing parts are much more important than angle and position of power car.

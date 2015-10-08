@@ -52,7 +52,7 @@ program input = unlines $
             (convertToCommands . map words . lines) input
 
 processCommands :: Train -> [DriveCommand] -> [Train]
-processCommands = scanl executeDriveCommand
+processCommands = scanl executeCommand
 
 convertToCommands :: [[String]] -> [DriveCommand]
 convertToCommands = map (\ (x:a:_) -> DriveCommand (read x :: Double) (read a :: Double))
