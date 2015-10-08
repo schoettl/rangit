@@ -77,3 +77,24 @@ spec = do
             it "trailer has correct angle" $ do
                 -- -pi oder +pi, hauptsache 180° verdreht halt
                 partAngle tr `shouldBe` -pi
+
+    describe "calculateError" $ do
+        let pc  = Part origin (pi/2) 1 1
+            tr1 = Part origin (pi/4) 1 1
+            tr2 = Part origin (pi/8) 1 1
+            idealTrain = fixInitialPositions [tr2, tr1, pc]
+            noDiff = calculateError idealTrain idealTrain
+            partPositionDiffProp train part x = Position x x == partPosition part || calculateError idealTrain (fixInitialPositions train) > noDiff
+            partAngleDiffProp train part x = x == partAngle part || calculateError idealTrain (fixInitialPositions train) > noDiff
+        it "is no difference between two times the same train" $ do
+            noDiff `shouldBe` 0
+        it "looks good for different positions of power car" $ property $
+           \ x -> partPositionDiffProp [tr2, tr1, pc { partPosition = Position x x }] pc x
+        it "looks good for different angle of just the power car" $ do
+            calculateError [pc] [pc { partAngle = pi }] `shouldNotBe` noDiff
+        it "looks good for different angles of power car" $ property $
+           \ x -> partAngleDiffProp [tr2, tr1, pc { partAngle = x }] pc x
+        it "looks good for different angles of trailer 1" $ property $
+           \ x -> partAngleDiffProp [tr2, tr1 { partAngle = x }, pc] tr1 x
+        it "looks good for different angles of trailer 2" $ property $
+           \ x -> partAngleDiffProp [tr2 { partAngle = x }, tr1, pc] tr2 x

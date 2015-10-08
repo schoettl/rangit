@@ -11,12 +11,37 @@ type DiscretePath = [Position]
 maxSteerAngle :: Double
 maxSteerAngle = pi/4
 
--- | Number of steer angle granularity one just one side.
-backupSteerGranularity :: Int
-backupSteerGranularity = 5
+-- | Number of steer angle precision on only one side.
+backupSteerPrecision :: Int
+backupSteerPrecision = 5
 
--- | Calculate error by position and angle of power car and by angle of trailing cars.
--- Angles of trailing cars are much more important than angle and position of power car.
+-- | Backup train along the given path.
+backupTrain
+    :: DiscretePath -- ^ Path to backup train along
+    -> Train        -- ^ Current train
+    -> Train        -- ^ Best driven train
+backupTrain [] train = train
+backupTrain path train = backupTrain (tail path) (snd $ backupTrainToFitPath0path train)
+
+-- | Move train to first waypoint so that it best fits the path.
+backupTrainToFitPath
+    :: DiscretePath          -- ^ Path to fit train to
+    -> Train                 -- ^ Train to move
+    -> (DriveCommand, Train) -- ^ Best fitted train
+backupTrainToFitPath path@(p:_) train =
+    let distanceToDrive = euclidianDistance (partPosition $ last train) p
+        idealTrain = calculateIdealTrain path train
+        steerAngles = map ((*(maxSteerAngle/fromIntegral backupSteerPrecision)) . fromIntegral) [-backupSteerPrecision..backupSteerPrecision]
+        trains = map (drive train (-distanceToDrive)) steerAngles
+        diffs = map (calculateError idealTrain) trains
+
+        best :: (Double, Double, Train)
+        best = minimumBy (\ (x, _, _) (y, _, _) -> compare x y) $ zip3 diffs steerAngles trains
+        (_, bestSteerAngle, bestTrain) = best
+    in (Command distanceToDrive bestSteerAngle, bestTrain)
+
+-- | Calculate error by position and angle of power car and by angle of trailing parts.
+-- Angles of trailing parts are much more important than angle and position of power car.
 -- Angle of a second trailer is more important than angle of first trailer and so on (guess).
 calculateError
     :: Train  -- ^ Theoretical train
@@ -24,7 +49,7 @@ calculateError
     -> Double -- ^ Error
 calculateError a b = powerCarPositionDiffScaled + sum weightedAngleDiffs
     where
-        angleDiffs = map (\ (ap, bp) -> partAngle ap - partAngle bp) (init $ zip a b)
+        angleDiffs = zipWith (\ ap bp -> abs $ partAngle ap - partAngle bp) a b
         weightedAngleDiffs = weightAngleDiffs angleDiffs
         powerCarPositionDiffScaled = euclidianDistance (partPosition $ last a) (partPosition $ last b) / 0.5 * 2*pi -- normalisieren: abstand / schlechtest_annehmbarer_abstand = winkel_mean / schlechtest_annehmbarer_winkel_zb360
 
@@ -43,29 +68,6 @@ calculateIdealTrain path train = fixInitialPositions $ foldr f [newPowerCar] (in
         f :: Part -> Train -> Train
         f p ps = p { partAngle = angle } : ps
             where angle = calcAngle $ partLengthRight p + sum (map partLength ps)
-
--- | Backup train along the given path.
-backupTrain
-    :: DiscretePath -- ^ Path to backup train along
-    -> Train        -- ^ Current train
-    -> Train        -- ^ Best driven train
-backupTrain [] train = train
-backupTrain path train = backupTrain (tail path) (calculateBestFittedTrain path train)
-
--- | Move train so that it best fits the path.
-calculateBestFittedTrain
-    :: DiscretePath -- ^ Path to fit train to
-    -> Train        -- ^ Train to move
-    -> Train        -- ^ Best fitted train
-calculateBestFittedTrain path@(p:_) train =
-    let distanceToDrive = euclidianDistance (partPosition $ last train) p
-        idealTrain = calculateIdealTrain path train
-        steerAngles = map ((*(maxSteerAngle/fromIntegral backupSteerGranularity)) . fromIntegral) [-backupSteerGranularity..backupSteerGranularity]
-        trains = map (drive train (-distanceToDrive)) steerAngles
-        diffs = map (calculateError idealTrain) trains
-        bestTrainAndDiff :: (Double, Train)
-        bestTrainAndDiff = minimumBy (\ (x, _) (y, _) -> compare x y) $ zip diffs trains
-    in snd bestTrainAndDiff
 
 -- | Calculate angle in path at given distance from the start.
 calculateAngleInPath

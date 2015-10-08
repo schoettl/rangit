@@ -29,8 +29,6 @@ instance ToJSON Part where
                , "rightLength" .= rightLength
                ]
 
-data Command = Command Double Double
-
 -- user code --
 
 myCar = Part origin 0 1 5
@@ -53,14 +51,14 @@ program input = unlines $
         processCommands myTrain $
             (convertToCommands . map words . lines) input
 
-processCommands :: Train -> [Command] -> [Train]
-processCommands = scanl executeCommand
+processCommands :: Train -> [DriveCommand] -> [Train]
+processCommands = scanl executeDriveCommand
 
-convertToCommands :: [[String]] -> [Command]
-convertToCommands = map (\ (x:a:_) -> Command (read x :: Double) (read a :: Double))
+convertToCommands :: [[String]] -> [DriveCommand]
+convertToCommands = map (\ (x:a:_) -> DriveCommand (read x :: Double) (read a :: Double))
 
-executeCommand :: Train -> Command -> Train
-executeCommand ps (Command x a) = drive ps x (degreesToRadians a)
+executeCommand :: Train -> DriveCommand -> Train
+executeCommand ps (DriveCommand x a) = drive ps x (degreesToRadians a)
 
 formatOutput :: Train -> String
 --formatOutput = encodeAsJson

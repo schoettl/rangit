@@ -2,6 +2,8 @@ module Rangit.Drive where
 
 import Rangit.Train
 
+data DriveCommand = DriveCommand Double Double
+
 -- | Length to drive in one calculation step.
 stepLength = 0.01
 
