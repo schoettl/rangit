@@ -24,16 +24,27 @@ backupTrain []   train = train
 backupTrain [_]  train = train
 backupTrain path train = backupTrain (tail path) (snd $ backupTrainToFitPath path train)
 
+-- | Backup train along the given path accumulating drive commands.
+backupTrainAccumulateDriveCommands
+    :: DiscretePath   -- ^ Path to backup train along
+    -> Train          -- ^ Current train
+    -> [DriveCommand] -- ^ Series of drive commands
+backupTrainAccumulateDriveCommands []   train = []
+backupTrainAccumulateDriveCommands [_]  train = []
+backupTrainAccumulateDriveCommands path train =
+    let (command, newTrain) = backupTrainToFitPath path train
+    in command : backupTrainAccumulateDriveCommands (tail path) newTrain
+
 -- | Move train to first waypoint so that it best fits the path.
 backupTrainToFitPath
     :: DiscretePath          -- ^ Path to fit train to
     -> Train                 -- ^ Train to move
     -> (DriveCommand, Train) -- ^ Best fitted train
 backupTrainToFitPath path@(p:_) train =
-    let distanceToDrive = euclidianDistance (partPosition $ last train) p
+    let distanceToDrive = -euclidianDistance (partPosition $ last train) p
         idealTrain = calculateIdealTrain path train
         steerAngles = map ((*(maxSteerAngle/fromIntegral backupSteerPrecision)) . fromIntegral) [-backupSteerPrecision..backupSteerPrecision]
-        trains = map (drive train (-distanceToDrive)) steerAngles
+        trains = map (drive train distanceToDrive) steerAngles
         diffs = map (calculateError idealTrain) trains
 
         best :: (Double, Double, Train)
