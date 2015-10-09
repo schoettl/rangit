@@ -136,3 +136,27 @@ spec = do
                         movedTrain = snd $ backupTrainToFitPath path train
             it "moves the train to fit the ideal train better" $ property $
                 betterFitProp
+
+    let secondFromEnd = last . init
+        trainPosition = partPosition . last
+        path = [origin, Position (-1) 0, Position (-2) (-1)]
+        train = fixInitialPositions [Part origin 0 0 1, Part (Position 2 0) 0 1 1]
+    describe "backupTrain" $ do
+        let newTrain = backupTrain path train
+            target = secondFromEnd path
+        it "approaches the target i.e. second point of path from the end" $ do
+            euclidianDistance (trainPosition newTrain) target `shouldSatisfy` (< euclidianDistance (trainPosition train) target)
+    describe "backupTrainAccumulateDriveCommands" $ do
+        let result = backupTrainAccumulateDriveCommands path train
+        it "should return n drive commands where n = len path - 1" $ do
+            length result `shouldBe` length path - 1
+        --it "approaches the target i.e. second point of path from the end" $ do
+        --    isFallingSeries $ map (euclidianDistance (secondFromEnd path) . trainPosition . snd) result
+        --where
+        --    isFallingSeries = foldl f (True, Nothing)
+        --        where
+        --            f (_, Nothing) val = (True, Just val)
+        --            f (True, Just last) val
+        --                | val < last = (True, Just val)
+        --                | otherwise  = (False, Just last)
+        --            f a@(False, _) _ = a
