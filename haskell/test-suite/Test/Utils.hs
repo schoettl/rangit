@@ -1,6 +1,6 @@
 {-# LANGUAGE FlexibleInstances #-}
 
-module Test.Utils ((@=~?)) where
+module Test.Utils (shouldAlmostBe, shouldAlmostBeAngle) where
 
 import Test.HUnit as HU
 import Rangit.Train
@@ -24,8 +24,18 @@ instance AlmostEq (Radians Float) where
     Radians x =~ Radians y = x =~ y
  
 -- operator definiton for HSpec:
-(@=~?) :: (Show a, AlmostEq a) => a -> a -> HU.Assertion
-(@=~?) expected actual  = expected =~ actual HU.@? assertionMsg
-    where
-      assertionMsg = "Expected : " ++ show expected ++
-                     "\nActual   : " ++ show actual
+shouldAlmostBe :: (Show a, AlmostEq a) => a -> a -> HU.Assertion
+actual `shouldAlmostBe` expected = actual =~ expected HU.@? assertionMsg
+    where assertionMsg = "expected: " ++ show expected
+                    ++ "\n but got: " ++ show actual
+
+shouldAlmostBeAngle :: Double -> Double -> HU.Assertion
+actual `shouldAlmostBeAngle` expected = normalizeAngle actual =~ normalizeAngle expected HU.@? assertionMsg
+    where assertionMsg = "expected: " ++ show expected ++ " = " ++ show (normalizeAngle expected)
+                    ++ "\n but got: " ++ show actual   ++ " = " ++ show (normalizeAngle actual)
+
+normalizeAngle :: Double -> Double
+normalizeAngle = mod2pi
+
+mod2pi :: Double -> Double
+mod2pi angle = angle - 2*pi * fromIntegral (floor (angle/(2*pi)))

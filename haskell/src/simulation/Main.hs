@@ -1,3 +1,4 @@
+{-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE FlexibleInstances #-}
 
@@ -9,6 +10,8 @@ import qualified Data.ByteString.Lazy.Char8 as BSL
 import Data.Aeson
 import Rangit.Train
 import Rangit.Drive
+import Data.Maybe
+import System.Environment (getArgs)
 import System.Console.Docopt
 
 {- | Later module description
@@ -17,6 +20,12 @@ import System.Console.Docopt
  - The power car is always right-most.
  - There can be an abitrary number of parts at the left side of the power car.
  -}
+
+patterns :: Docopt
+patterns = [docopt|usage: simulation <trainfile>
+|]
+
+getArgOrExit = getArgOrExitWith patterns
 
 instance ToJSON Position where
     toJSON (Position x y) = object [ "x" .= x , "y" .= y ]
@@ -29,15 +38,6 @@ instance ToJSON Part where
                , "rightLength" .= rightLength
                ]
 
-data Command = Command Double Double
-
--- user code --
-
-myCar = Part origin 0 1 5
-myTrailer = Part origin 1 0 4
-
-myTrain = fixInitialPositions $ myTrailer : [myCar]
-
 -- | Drive train reading from standard input and
 -- writing new positions to standard output.
 --
@@ -45,29 +45,37 @@ myTrain = fixInitialPositions $ myTrailer : [myCar]
 -- 2. drive the train according to the input,
 -- 3. output new position as JSON.
 main :: IO ()
-main = interact program
+main = do
+    args <- parseArgsOrExit patterns =<< getArgs
+    train <- readTrain $ fromJust $ getArg args (argument "trainfile")
+    interact (program train)
 
-program :: String -> String
-program input = unlines $
+program :: Train -> String -> String
+program train input = unlines $
     map formatOutput $
-        processCommands myTrain $
+        processCommands train $
             (convertToCommands . map words . lines) input
 
-processCommands :: [Part] -> [Command] -> [[Part]]
+processCommands :: Train -> [DriveCommand] -> [Train]
 processCommands = scanl executeCommand
 
-convertToCommands :: [[String]] -> [Command]
-convertToCommands = map (\ (x:a:_) -> Command (read x :: Double) (read a :: Double))
+convertToCommands :: [[String]] -> [DriveCommand]
+convertToCommands = map (\ (x:a:_) -> DriveCommand (read x :: Double) (read a :: Double))
 
-executeCommand :: [Part] -> Command -> [Part]
-executeCommand ps (Command x a) = drive ps x (degreesToRadians a)
+executeCommand :: Train -> DriveCommand -> Train
+executeCommand ps (DriveCommand x a) = drive ps x (degreesToRadians a)
 
-formatOutput :: [Part] -> String
+formatOutput :: Train -> String
 --formatOutput = encodeAsJson
 formatOutput = show
 
-encodeAsJson :: [Part] -> String
+encodeAsJson :: Train -> String
 encodeAsJson = BSL.unpack . encode . toJSON
 
 degreesToRadians :: Double -> Double
 degreesToRadians a = let Radians x = radians $ Degrees a in x
+
+readTrain :: FilePath -> IO Train
+readTrain s = do
+    contents <- readFile s
+    return $ read contents

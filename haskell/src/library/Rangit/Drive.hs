@@ -2,23 +2,25 @@ module Rangit.Drive where
 
 import Rangit.Train
 
+data DriveCommand = DriveCommand Double Double
+
 -- | Length to drive in one calculation step.
 stepLength = 0.01
 
 -- | API command: drive the train a distance at a steer angle.
-drive :: [Part] -- ^ Train to be driven
+drive :: Train  -- ^ Train to be driven
       -> Double -- ^ Distance to be driven (can be positive or negative)
       -> Double -- ^ Steer angle between middle line and direction line, counter-clockwise
-      -> [Part] -- ^ Train at the new position
+      -> Train  -- ^ Train at the new position
 drive train len = driveInDirection train (signum len) (abs len)
 
 -- | Drive the train a distance at a steer angle.
 -- The sign of the distance is needed for the recursion.
-driveInDirection :: [Part] -- ^ Train to be driven
+driveInDirection :: Train  -- ^ Train to be driven
                  -> Double -- ^ Sign of distance
                  -> Double -- ^ Absolute distance to be driven
                  -> Double -- ^ Steer angle between middle line and direction line, counter-clockwise
-                 -> [Part] -- ^ Train at the new position
+                 -> Train  -- ^ Train at the new position
 driveInDirection train sign len angle
     | len <= 0  = train
     | otherwise = driveRemaining $ len - stepLength
@@ -27,10 +29,10 @@ driveInDirection train sign len angle
         updated = moveTrain train sign angle
 
 -- | Move the train one step length.
-moveTrain :: [Part] -- ^ Train to be moved
+moveTrain :: Train  -- ^ Train to be moved
           -> Double -- ^ Sign for step length denoting the direction
           -> Double -- ^ Steer angle for the power car
-          -> [Part] -- ^ Moved train
+          -> Train  -- ^ Moved train
 moveTrain ps sign a =
     let point = partPosition $ last ps
         angle = a + partAngle (last ps)
@@ -38,14 +40,12 @@ moveTrain ps sign a =
     in fst $ foldr movePart ([], target) ps
 
 -- | Move one part of the train by moving the right hitch position to the target position.
-movePart :: Part               -- ^ Current part to be moved
-         -> ([Part], Position) -- ^ Already moved parts right of current part, and target position for current part
-         -> ([Part], Position) -- ^ Moved parts including current one and new target position i. e. position of current part's left hitch
+movePart :: Part              -- ^ Current part to be moved
+         -> (Train, Position) -- ^ Already moved parts right of current part, and target position for current part
+         -> (Train, Position) -- ^ Moved parts including current one and new target position i. e. position of current part's left hitch
 movePart part (ps, target) =
     let center = calculateCenterPosition part
-        xDiff = xPos target - xPos center
-        yDiff = yPos target - yPos center
-        absAngle = calculateAngleByArcTan xDiff yDiff
+        absAngle = calculateAngleBetweenPoints center target
         leftHitch = calculateLeftHitchPosition part
     in (part { partPosition = target, partAngle = absAngle } : ps, leftHitch)
 
@@ -62,3 +62,10 @@ calculateAngleByArcTan = flip atan2
 -- | Calculate missing angle in triangle (Law of sines)
 --calculateMissingAngleAlpha :: Radians Double -> Double -> Double -> Radians Double
 --calculateMissingAngleAlpha beta a b = arcsine $ a * sine beta / b
+
+-- | Calculate angle of line between two points.
+calculateAngleBetweenPoints
+    :: Position -- ^ Start point of line
+    -> Position -- ^ End point of line
+    -> Double   -- ^ Angle of line between points
+calculateAngleBetweenPoints (Position x1 y1) (Position x2 y2) = calculateAngleByArcTan (x2 - x1) (y2 - y1)
