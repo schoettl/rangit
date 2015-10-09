@@ -109,8 +109,7 @@ spec = do
            \ x -> partAngleDiffProp [tr2 { partAngle = x }, tr1, pc] tr2 x
 
     describe "backupTrainToFitPath" $ do
-        let origin = Position 0 0
-            path = [origin, Position (-1) 0]
+        let path = [origin, Position (-1) 0]
             pc = Part origin 0 1 1
         context "only power car" $ do
             let idealTrain = [pc]

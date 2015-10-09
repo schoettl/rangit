@@ -69,14 +69,38 @@ executable backupai
   -- other-extensions:    
   build-depends:       base
                      , rangit
-                     , AC-Angle
-                     , aeson
-                     , bytestring
                      , docopt
   hs-source-dirs:      src/backupai/
   default-language:    Haskell2010
   if flag(documentation)
     build-depends:     hscolour == 1.20.*
+
+executable image2path
+  main-is:             Main.hs
+  -- other-modules:       
+  -- other-extensions:    
+  build-depends:       base
+                     , docopt
+                     , filepath
+                     , friday
+                     , friday-devil
+  hs-source-dirs:      src/image2path/
+  default-language:    Haskell2010
+  if flag(documentation)
+    build-depends:     hscolour == 1.20.*
+
+executable outputtrain
+  main-is:             Main.hs
+  -- other-modules:       
+  -- other-extensions:    
+  build-depends:       base
+                     , rangit
+                     , docopt
+  hs-source-dirs:      src/outputtrain/
+  default-language:    Haskell2010
+  if flag(documentation)
+    build-depends:     hscolour == 1.20.*
+
 
 test-suite hspec
   build-depends:      base, hspec, QuickCheck, rangit, AC-Angle, HUnit
