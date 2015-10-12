@@ -19,16 +19,13 @@ loadPathFromFile = doReadFile loadPath
 loadPath :: Handle -> IO DiscretePath
 loadPath h = do
     contents <- hGetContents h
-    return $ stringToPath contents
+    let allLines = lines contents
+        positionLines = filter (\ (c:_) -> c /= '#') allLines -- ignore comment lines
+        path = map (toPosition . map read . words) positionLines
+    return path
 
 doReadFile :: (Handle -> IO a) -> FilePath -> IO a
 doReadFile f s = f =<< openFile s ReadMode
-
-stringToPath :: String -> DiscretePath
-stringToPath s =
-    let allLines = lines s
-        positionLines = filter (\ (c:_) -> c /= '#') allLines
-    in map (toPosition . map read . words) positionLines
 
 toPosition :: [Double] -> Position
 toPosition (x:y:_) = Position x y

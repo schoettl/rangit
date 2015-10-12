@@ -1,12 +1,13 @@
 module Main where
 
 functions =
-    [ ("square",       (^2)              )
-    , ("cube",         (^3)              )
-    , ("squareroute",  sqrt              )
-    , ("sine",         \ x -> 80 * sin x )
-    , ("cosine",       \ x -> 80 * cos x )
-    , ("exponential",  \ x -> exp x      )
+    [ ("square",       (^2)                      )
+    , ("cube",         \ x -> (x*0.2)^3          )
+    , ("squareroute",  sqrt                      )
+    , ("squareoffs",   \ x -> 101 - (10 - x)^2   )
+    , ("sine",         \ x -> 80 * sin (x*pi/50) )
+    , ("cosine",       \ x -> 80 * cos (x*pi/50) )
+    , ("exponential",  \ x -> exp (x*0.05)       )
     ]
 
 maxValue = 100
