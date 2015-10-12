@@ -16,6 +16,6 @@ for p in paths/*; do
         tb="${t##*/}"
         r="results/${pb%.*}_${tb%.*}.txt"
         { echo "# $p"; echo "# $t"; } > "$r"
-        ../backupai "$p" "$t" | ../simulation "$t" | ../trains2positions >> "$r"
+        ../backupai "$p" <(../inittrain4path "$p" < "$t") | ../simulation <(../inittrain4path "$p" < "$t") | ../trains2positions >> "$r"
     done
 done
