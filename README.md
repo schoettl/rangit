@@ -55,7 +55,7 @@ API
 
 ### Simulation API
 
-   driveTrain ( train : String, length : Double, angle : Double ) -> newTrain : String
+    driveTrain ( train : String, length : Double, angle : Double ) -> newTrain : String
 
  * `train` is a JSON-String describing the car and trailers.
  * `length` is the length to drive.

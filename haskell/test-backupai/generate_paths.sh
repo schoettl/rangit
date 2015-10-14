@@ -3,6 +3,6 @@
 # run it from it's directory!
 
 mkdir -p paths/
-rm paths/*.mat
+rm paths/*
 
-../dist/build/generatepaths/generatepaths
+../dist/build/generatepaths/generatepaths paths/

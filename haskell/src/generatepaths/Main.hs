@@ -1,4 +1,16 @@
+{-# LANGUAGE QuasiQuotes #-}
+
 module Main where
+
+import System.Environment (getArgs)
+import System.Console.Docopt
+
+patterns :: Docopt
+patterns = [docopt|usage:
+  generatepaths <foldername>
+|]
+
+getArgOrExit = getArgOrExitWith patterns
 
 functions =
     [ ("square",       (^2)                      )
@@ -15,12 +27,15 @@ maxValue = 100
 xs = [0..maxValue]
 
 main :: IO ()
-main = mapM_ savePath $ zip [1..] functions
+main = do
+    args <- parseArgsOrExit patterns =<< getArgs
+    let Just foldername = getArg args (argument "foldername")
+    mapM_ (savePath foldername) functions
 
-savePath :: (Int, (String, Double -> Double)) -> IO ()
-savePath (i, (s, f)) = do
+savePath :: FilePath -> (String, Double -> Double) -> IO ()
+savePath foldername (s, f) = do
     let ys = map f xs
         ys' = takeWhile (<=maxValue) ys
         pairs = zip xs ys'
         lines = map (unwords . map show . (\ (x, y) -> [x, y])) pairs
-    writeFile ("paths/path_" ++ s ++ ".mat") $ unlines lines
+    writeFile (foldername ++ "/path_" ++ s ++ ".txt") $ unlines lines

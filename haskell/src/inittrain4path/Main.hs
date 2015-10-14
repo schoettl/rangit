@@ -3,7 +3,6 @@ module Main where
 import Rangit.Train
 import Rangit.AI
 import Rangit.IO
-import System.IO
 import System.Environment
 
 main :: IO ()

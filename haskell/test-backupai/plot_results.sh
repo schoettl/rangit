@@ -13,5 +13,5 @@ exitWithError() {
 [[ -n $1 ]] || exitWithError "$usage"
 
 file="$1"
-# TODO call octave script with 2 command line arguments
-octave plot_results.m "$file" "$(awk '/paths/{print $2}' "$file")"
+
+./plot_results.m "$file" "$(awk '/paths/{print $2}' "$file")"

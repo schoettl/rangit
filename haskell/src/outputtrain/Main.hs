@@ -4,11 +4,11 @@ import Rangit.Train
 
 -- train configuration
 
-myPowerCar = Part origin 0 1 2
+myPowerCar = Part origin 0 0 4
 myTrailer1 = Part origin (pi/2) 0 2
 myTrailer2 = Part origin (pi/3) 0 3
 
-myTrain = fixInitialPositions $ myTrailer2 : myTrailer1 : [myPowerCar]
+myTrain = fixInitialPositions $ [myPowerCar]
 
 
 -- main
