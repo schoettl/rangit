@@ -1,8 +1,27 @@
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE FlexibleInstances #-}
+
 module Rangit.IO where
 
 import Rangit.Train
 import Rangit.AI
 import System.IO
+import Data.Aeson
+import qualified Data.ByteString.Lazy.Char8 as BSL
+
+instance ToJSON Position where
+    toJSON (Position x y) = object [ "x" .= x , "y" .= y ]
+
+instance ToJSON Part where
+    toJSON (Part position angle leftLength rightLength) =
+        object [ "position"    .= position
+               , "angle"       .= angle
+               , "leftLength"  .= leftLength
+               , "rightLength" .= rightLength
+               ]
+
+encodeTrainAsJson :: Train -> String
+encodeTrainAsJson = BSL.unpack . encode . toJSON
 
 loadTrainFromFile :: FilePath -> IO Train
 loadTrainFromFile = doReadFile loadTrain

@@ -7,7 +7,6 @@ import Graphics.UI.Gtk
 import Graphics.Rendering.Cairo
 import Data.IORef
 import Data.Reference
-import Data.Angle
 import Rangit.Train
 import Rangit.Drive
 import Control.Monad

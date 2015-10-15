@@ -1,15 +1,12 @@
 {-# LANGUAGE QuasiQuotes #-}
-{-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE FlexibleInstances #-}
 
 module Main where
 
 import System.IO
 import Data.Angle
-import qualified Data.ByteString.Lazy.Char8 as BSL
-import Data.Aeson
 import Rangit.Train
 import Rangit.Drive
+import Rangit.IO
 import Data.Maybe
 import System.Environment (getArgs)
 import System.Console.Docopt
@@ -27,23 +24,12 @@ patterns = [docopt|usage: simulation <trainfile>
 
 getArgOrExit = getArgOrExitWith patterns
 
-instance ToJSON Position where
-    toJSON (Position x y) = object [ "x" .= x , "y" .= y ]
-
-instance ToJSON Part where
-    toJSON (Part position angle leftLength rightLength) =
-        object [ "position"    .= position
-               , "angle"       .= angle
-               , "leftLength"  .= leftLength
-               , "rightLength" .= rightLength
-               ]
-
 -- | Drive train reading from standard input and
 -- writing new positions to standard output.
 --
 -- 1. Read lines of input (each length and steer angle),
 -- 2. drive the train according to the input,
--- 3. output new position as JSON.
+-- 3. output new position as Haskell object or JSON.
 main :: IO ()
 main = do
     args <- parseArgsOrExit patterns =<< getArgs
@@ -66,11 +52,8 @@ executeCommand :: Train -> DriveCommand -> Train
 executeCommand ps (DriveCommand x a) = drive ps x (degreesToRadians a)
 
 formatOutput :: Train -> String
---formatOutput = encodeAsJson
+--formatOutput = encodeTrainAsJson
 formatOutput = show
-
-encodeAsJson :: Train -> String
-encodeAsJson = BSL.unpack . encode . toJSON
 
 degreesToRadians :: Double -> Double
 degreesToRadians a = let Radians x = radians $ Degrees a in x
