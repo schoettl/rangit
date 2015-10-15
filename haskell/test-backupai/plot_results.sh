@@ -14,4 +14,4 @@ exitWithError() {
 
 file="$1"
 
-./plot_results.m "$file" "$(awk '/paths/{print $2}' "$file")"
+octave -qf --persist plot_results.m "$file" "$(awk '/paths/{print $2}' "$file")"

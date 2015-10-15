@@ -1,17 +1,18 @@
 #!/usr/bin/octave -qf
 
+# without --persist, octave closes the plot window immediately
+# but there is no short form of this option and there must be only one argument in the shebang line
+
 args = argv();
 
-#resultFile = args{1};
-#pathFile = args{2};
-resultFile = "results/path_square_car.txt"
-pathFile = "paths/path_square.mat"
+resultFile = args{1};
+pathFile = args{2};
 
 resultData = dlmread(resultFile);
 pathData = dlmread(pathFile);
 
-# weil octave nix kann muss ich kommentarzeilen noch entfernen:
-resultData = resultData(3:rows(resultData), :)
+# weil octave nix kann muss noch ich zwei kommentarzeilen oben entfernen:
+resultData = resultData(3:rows(resultData), :);
 
 nHitches = resultData(1, 1);
 nAxes = resultData(1, nHitches*2 + 2);
@@ -38,6 +39,3 @@ for i = 1:drawEveryNthTrain:rows(resultData)
   y = resultData(i, 3:2:(nHitches+1));
   plot(x, y, "linestyle", '-', "color", 'y')
 endfor
-
-# "Print" current plot to file
-#print("result_plot.pdf")
