@@ -29,7 +29,7 @@ backupTrainAccumulateDriveCommands
     :: DiscretePath   -- ^ Path to backup train along
     -> Train          -- ^ Current train
     -> [DriveCommand] -- ^ Series of drive commands
-backupTrainAccumulateDriveCommands []   train = []
+backupTrainAccumulateDriveCommands []   train = error "invalid path"
 backupTrainAccumulateDriveCommands [_]  train = []
 backupTrainAccumulateDriveCommands path train =
     let (command, newTrain) = backupTrainToFitPath path train
