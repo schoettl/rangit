@@ -63,7 +63,7 @@ calculateError a b = powerCarPositionDiffScaled + sum weightedAngleDiffs
     where
         angleDiffs = zipWith (\ ap bp -> abs $ partAngle ap - partAngle bp) a b
         weightedAngleDiffs = weightAngleDiffs angleDiffs
-        powerCarPositionDiffScaled = euclidianDistance (partPosition $ last a) (partPosition $ last b) / 0.5 * 2*pi -- normalisieren: abstand / schlechtest_annehmbarer_abstand = winkel_mean / schlechtest_annehmbarer_winkel_zb360
+        powerCarPositionDiffScaled = euclidianDistance (trainPosition a) (trainPosition b) / 0.5 * 2*pi -- normalisieren: abstand / schlechtest_annehmbarer_abstand = winkel_mean / schlechtest_annehmbarer_winkel_zb360
 
 -- | Calculate ideal train position for path.
 calculateIdealTrain

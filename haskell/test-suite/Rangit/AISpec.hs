@@ -138,7 +138,6 @@ spec = do
                 betterFitProp
 
     let secondFromEnd = last . init
-        trainPosition = partPosition . last
         path = [origin, Position (-1) 0, Position (-2) (-1)]
         train = fixInitialPositions [Part origin 0 0 1, Part (Position 2 0) 0 1 1]
     describe "backupTrain" $ do
