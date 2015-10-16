@@ -19,6 +19,10 @@ nAxes = resultData(1, nHitches*2 + 2);
 
 plot(pathData(:, 1), pathData(:, 2),
   "linestyle", ':', "color", 'k')
+
+# only show this rect [x_min, x_max, y_min, y_max]
+#axis([0, 2, 0, 4])
+
 hold on;
 
 for i = 1:nHitches
@@ -33,9 +37,27 @@ for i = 1:nAxes
     "linestyle", ':', "color", 'g')
 endfor
 
-drawEveryNthTrain = floor(rows(resultData) / 5);
+nTrainToDraw = 5
+drawEveryNthTrain = floor(rows(resultData) / nTrainToDraw)
+
 for i = 1:drawEveryNthTrain:rows(resultData)
-  x = resultData(i, 2:2:(nHitches+1));
-  y = resultData(i, 3:2:(nHitches+1));
-  plot(x, y, "linestyle", '-', "color", 'y')
+
+  iHitchesEnd = 2*nHitches + 1
+  x = resultData(i, 2:2:iHitchesEnd);
+  y = resultData(i, 3:2:iHitchesEnd);
+  plot(x, y,
+    "linestyle", '-',
+    "linewidth", 2,
+    "marker" , 'o', # bug in doc: marker instead of markerstyle
+    "color", 'c')
+
+  iAxesStart = 2*nHitches + 2
+  iAxesEnd = iAxesStart + 2*nAxes
+  x = resultData(i, (iAxesStart+1):2:iAxesEnd);
+  y = resultData(i, (iAxesStart+2):2:iAxesEnd);
+  plot(x, y,
+    "linestyle", '-',
+    "linewidth", 3,
+    "marker" , '*', # bug in doc: marker instead of markerstyle
+    "color", 'y')
 endfor
