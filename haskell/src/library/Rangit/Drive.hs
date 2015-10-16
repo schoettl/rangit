@@ -14,6 +14,14 @@ drive :: Train  -- ^ Train to be driven
       -> Train  -- ^ Train at the new position
 drive train len = driveInDirection train (signum len) (abs len)
 
+-- | API command: drive the train a distance at a steer angle.
+driveAccumulateTrains
+    :: Train   -- ^ Train to be driven
+    -> Double  -- ^ Distance to be driven (can be positive or negative)
+    -> Double  -- ^ Steer angle between middle line and direction line, counter-clockwise
+    -> [Train] -- ^ Trains, one for every step to the new position
+driveAccumulateTrains train len = driveInDirectionAccumulateTrains train (signum len) (abs len)
+
 -- | Drive the train a distance at a steer angle.
 -- The sign of the distance is needed for the recursion.
 driveInDirection :: Train  -- ^ Train to be driven
@@ -26,6 +34,21 @@ driveInDirection train sign len angle
     | otherwise = driveRemaining $ len - stepLength
     where
         driveRemaining len = driveInDirection updated sign len angle
+        updated = moveTrain train sign angle
+
+-- | Drive the train a distance at a steer angle.
+-- The sign of the distance is needed for the recursion.
+driveInDirectionAccumulateTrains
+    :: Train   -- ^ Train to be driven
+    -> Double  -- ^ Sign of distance
+    -> Double  -- ^ Absolute distance to be driven
+    -> Double  -- ^ Steer angle between middle line and direction line, counter-clockwise
+    -> [Train] -- ^ Trains, one for every step to the new position
+driveInDirectionAccumulateTrains train sign len angle
+    | len <= 0  = []
+    | otherwise = train : driveRemaining (len - stepLength)
+    where
+        driveRemaining len = driveInDirectionAccumulateTrains updated sign len angle
         updated = moveTrain train sign angle
 
 -- | Move the train one step length.

@@ -51,6 +51,64 @@ spec = do
             it "calculates new angle correctly" $ do
                 partAngle movedCar `shouldSatisfy` (>pi/2)
 
+    describe "driveAccumulateTrains" $ do
+        let car = Part origin 0 0 1
+            train = [car]
+        context "driving a car accumulating intermediate positions" $ do
+            it "there are 0 trains in the list for a drive of 0 meters" $ do
+                let allTrains = driveAccumulateTrains train 0 0
+                length allTrains `shouldBe` 0
+            it "there is 1 train in the list for a drive of stepLength meters" $ do
+                let allTrains = driveAccumulateTrains train stepLength 0
+                length allTrains `shouldBe` 1
+            it "there are (1 / stepLength) trains in the list for a drive of 1 meter" $ do
+                let allTrains = driveAccumulateTrains train 1 0
+                length allTrains `shouldBe` ceiling (1/stepLength)
+            it "there are (x / stepLength) trains in the list for diffent x" $ property $
+                \ x -> length (driveAccumulateTrains train x 0) == ceiling (abs x / stepLength)
+        context "driving a car to the right (positive distance)" $ do
+            let allTrains = driveAccumulateTrains train 1 0
+                movedTrain = last allTrains
+                [movedCar] = movedTrain
+            it "calculates new position correctly" $ do
+                let Position x y = partPosition movedCar
+                x `shouldSatisfy` \x -> (x > (1-stepLength)) && x < (1+stepLength)
+            it "calculates new angle" $ do
+                partAngle movedCar `shouldBe` 0
+        context "driving a car to the left (negative distance)" $ do
+            let allTrains = driveAccumulateTrains train (-1) 0
+                movedTrain = last allTrains
+                [movedCar] = movedTrain
+            it "calculates new position correctly" $ do
+                let Position x y = partPosition movedCar
+                x `shouldSatisfy` \x -> (x > (-1-stepLength)) && x < (-1+stepLength)
+                y `shouldBe` 0
+            it "calculates new angle correctly" $ do
+                partAngle movedCar `shouldBe` 0
+        context "driving car with trailer" $ do
+            let trailer = Part origin 0 undefined 1
+                trainWithTrailer = fixInitialPositions $ trailer:train
+                allTrains = driveAccumulateTrains trainWithTrailer (-1) 0
+                movedTrain = last allTrains
+                movedTrailer:_ = movedTrain
+            it "calculates new trailer position" $ do
+                let Position x y = partPosition movedTrailer
+                x `shouldSatisfy` \x -> (x > (-2-2*stepLength)) && x < (-2+2*stepLength)
+                y `shouldBe` 0
+            it "calculates new angle correctly" $ do
+                partAngle movedTrailer `shouldBe` 0
+        context "bringing car from <90° to >90°" $ do
+            let train = [Part origin (pi/2-0.1) 0 1]
+                allTrains = driveAccumulateTrains train 1 (pi/4)
+                movedTrain = last allTrains
+                [movedCar] = movedTrain
+            it "calculates new position plausible" $ do
+                let Position x y = partPosition movedCar
+                x `shouldSatisfy` (<0)
+                y `shouldSatisfy` (>0)
+            it "calculates new angle correctly" $ do
+                partAngle movedCar `shouldSatisfy` (>pi/2)
+
     describe "movePart" $ do
         context "move one part" $ do
             let powerCar = Part origin 0 0 1

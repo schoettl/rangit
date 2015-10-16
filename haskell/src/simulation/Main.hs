@@ -19,7 +19,12 @@ import System.Console.Docopt
  -}
 
 patterns :: Docopt
-patterns = [docopt|usage: simulation <trainfile>
+patterns = [docopt|usage: simulation [options] <trainfile>
+
+options:
+  -i, --print-interval=<meters>
+        Print train every x meters of driving. Set x to 0 to print train only
+        after each drive command. [default: 0.1]
 |]
 
 getArgOrExit = getArgOrExitWith patterns
@@ -33,14 +38,18 @@ getArgOrExit = getArgOrExitWith patterns
 main :: IO ()
 main = do
     args <- parseArgsOrExit patterns =<< getArgs
-    train <- readTrain $ fromJust $ getArg args (argument "trainfile")
-    interact (program train)
+    train <- readTrain . fromJust . getArg args $ argument "trainfile"
+    let interval = read . fromJust . getArg args $ longOption "print-interval" :: Double
+        filterResult = if interval <= 0
+            then id
+            else selectTrainsToPrint interval
+    interact (program filterResult train)
 
-program :: Train -> String -> String
-program train input = unlines $
-    map formatOutput $
-        processCommands train $
-            (convertToCommands . map words . lines) input
+program :: ([Train] -> [Train]) -> Train -> String -> String
+program filterResult train input =
+    unlines . map formatOutput .
+        filterResult . processCommands train .
+            convertToCommands . map words . lines $ input
 
 processCommands :: Train -> [DriveCommand] -> [Train]
 processCommands = scanl executeCommand
@@ -62,3 +71,18 @@ readTrain :: FilePath -> IO Train
 readTrain s = do
     contents <- readFile s
     return $ read contents
+
+-- | In the list of moved trains keep every n-th train with n so that there is
+-- the given way distance between the trains.
+selectTrainsToPrint :: Double -> [Train] -> [Train]
+selectTrainsToPrint interval trains = let modulus = calculateModulus interval
+    in snd . unzip . filter (\ (n, _) -> n `mod` modulus == 0) . zip [0..] $ trains
+
+-- | Calculate modulus that is used in selectTrainsToPrint
+calculateModulus :: Double -> Int
+calculateModulus interval
+    | interval <= 0          = error "this function only handles values > 0"
+    | interval <= stepLength = ceiling quotient
+    | interval == stepLength = 1
+    | otherwise              = round quotient
+    where quotient = interval / stepLength
