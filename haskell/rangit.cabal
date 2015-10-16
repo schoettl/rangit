@@ -114,6 +114,7 @@ executable backupai
   build-depends:       base
                      , rangit
                      , docopt
+                     , AC-Angle
   hs-source-dirs:      src/backupai/
   default-language:    Haskell2010
   if flag(documentation)

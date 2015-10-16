@@ -7,6 +7,7 @@ import Rangit.Drive
 import Rangit.AI
 import Rangit.IO
 import Data.Maybe
+import Data.Angle
 import System.Environment (getArgs)
 import System.Console.Docopt
 
@@ -35,4 +36,7 @@ getPositionalArg :: Arguments -> String -> String
 getPositionalArg args name = fromJust $ getArg args (argument name)
 
 printDriveCommand :: DriveCommand -> IO ()
-printDriveCommand (DriveCommand l a) = putStrLn $ show l ++ " " ++ show a
+printDriveCommand (DriveCommand l a) = putStrLn $ show l ++ " " ++ show (radiansToDegree a)
+
+radiansToDegree :: Double -> Double
+radiansToDegree a = let Degrees x = degrees $ Radians a in x
