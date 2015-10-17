@@ -37,12 +37,12 @@ for i = 1:nAxes
     "linestyle", ':', "color", 'g')
 endfor
 
-nTrainToDraw = 5
-drawEveryNthTrain = floor(rows(resultData) / nTrainToDraw)
+nTrainToDraw = 5;
+drawEveryNthTrain = floor(rows(resultData) / nTrainToDraw);
 
 for i = 1:drawEveryNthTrain:rows(resultData)
 
-  iHitchesEnd = 2*nHitches + 1
+  iHitchesEnd = 2*nHitches + 1;
   x = resultData(i, 2:2:iHitchesEnd);
   y = resultData(i, 3:2:iHitchesEnd);
   plot(x, y,
@@ -51,8 +51,8 @@ for i = 1:drawEveryNthTrain:rows(resultData)
     "marker" , 'o', # bug in doc: marker instead of markerstyle
     "color", 'c')
 
-  iAxesStart = 2*nHitches + 2
-  iAxesEnd = iAxesStart + 2*nAxes
+  iAxesStart = 2*nHitches + 2;
+  iAxesEnd = iAxesStart + 2*nAxes;
   x = resultData(i, (iAxesStart+1):2:iAxesEnd);
   y = resultData(i, (iAxesStart+2):2:iAxesEnd);
   plot(x, y,
