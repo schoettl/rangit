@@ -24,7 +24,9 @@ functions =
 
 maxValue = 100
 
-xs = [0..maxValue]
+step = 0.1
+
+xs = [0, step ..maxValue]
 
 main :: IO ()
 main = do
