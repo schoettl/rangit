@@ -59,11 +59,11 @@ calculateError
     :: Train  -- ^ Theoretical train
     -> Train  -- ^ Actual train
     -> Double -- ^ Error
-calculateError a b = powerCarPositionDiffScaled + sum weightedAngleDiffs
+calculateError a b = weightedPositionDiff + sum weightedAngleDiffs
     where
         angleDiffs = zipWith (\ ap bp -> abs $ partAngle ap - partAngle bp) a b
         weightedAngleDiffs = weightAngleDiffs angleDiffs
-        powerCarPositionDiffScaled = euclidianDistance (trainPosition a) (trainPosition b) / 0.5 * 2*pi -- normalisieren: abstand / schlechtest_annehmbarer_abstand = winkel_mean / schlechtest_annehmbarer_winkel_zb360
+        weightedPositionDiff = weightPositionDiff $ euclidianDistance (trainPosition a) (trainPosition b)
 
 -- | Calculate ideal train position for path.
 calculateIdealTrain
@@ -103,3 +103,10 @@ weightAngleDiffs
     -> [Double] -- ^ Weighted angle differences
 weightAngleDiffs list = fst $ foldr f ([], 0) list
     where f d (r, i) = (d * 2^i : r, i+1)
+
+-- | Weight/scale position difference (euclidiance distance).
+-- normalisieren: abstand / schlechtest_annehmbarer_abstand = winkel_mean / schlechtest_annehmbarer_winkel_zb360
+weightPositionDiff
+    :: Double -- ^ Euclidian distance as difference between different positioned trains
+    -> Double -- ^ Weighted position difference
+weightPositionDiff x = let acceptableDiff = 2 in x / acceptableDiff * 2*pi 

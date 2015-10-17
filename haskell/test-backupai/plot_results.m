@@ -18,7 +18,7 @@ nHitches = resultData(1, 1);
 nAxes = resultData(1, nHitches*2 + 2);
 
 plot(pathData(:, 1), pathData(:, 2),
-  "linestyle", ':', "color", 'k')
+  "linestyle", ':', "marker", '+', "color", 'k')
 
 # only show this rect [x_min, x_max, y_min, y_max]
 #axis([0, 2, 0, 4])

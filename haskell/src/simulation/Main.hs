@@ -68,7 +68,7 @@ processCommands' t = concat . fst . foldl executeCommand' ([[t]], t)
 executeCommand' :: ([[Train]], Train) -> DriveCommand -> ([[Train]], Train)
 executeCommand' lastAccu@(result, lastTrain) (DriveCommand x a) =
     let newTrains = driveAccumulateTrains lastTrain x (degreesToRadians a)
-    in if newTrains == []
+    in if null newTrains
         then lastAccu
         else (result ++ [newTrains], last newTrains)
 

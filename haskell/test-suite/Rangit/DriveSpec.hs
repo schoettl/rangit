@@ -57,7 +57,7 @@ spec = do
         context "driving a car accumulating intermediate positions" $ do
             it "there are 0 trains in the list for a drive of 0 meters" $ do
                 let allTrains = driveAccumulateTrains train 0 0
-                length allTrains `shouldBe` 0
+                allTrains `shouldBe` []
             it "there is 1 train in the list for a drive of stepLength meters" $ do
                 let allTrains = driveAccumulateTrains train stepLength 0
                 length allTrains `shouldBe` 1
