@@ -24,7 +24,7 @@ patterns = [docopt|usage: simulation [options] <trainfile>
 options:
   -i, --print-interval=<meters>
         Print train every x meters of driving. Set x to 0 to print train only
-        after each drive command. [default: 0.1]
+        after each drive command. [default: 0.5]
 |]
 
 getArgOrExit = getArgOrExitWith patterns
@@ -40,25 +40,40 @@ main = do
     args <- parseArgsOrExit patterns =<< getArgs
     train <- readTrain . fromJust . getArg args $ argument "trainfile"
     let interval = read . fromJust . getArg args $ longOption "print-interval" :: Double
-        filterResult = if interval <= 0
-            then id
-            else selectTrainsToPrint interval
-    interact (program filterResult train)
+    interact (program interval train)
 
-program :: ([Train] -> [Train]) -> Train -> String -> String
-program filterResult train input =
+program :: Double -> Train -> String -> String
+program interval train input =
     unlines . map formatOutput .
-        filterResult . processCommands train .
+        runSimulation interval train .
             convertToCommands . map words . lines $ input
+
+runSimulation :: Double -> Train -> [DriveCommand] -> [Train]
+runSimulation outputInterval train commands =
+    if outputInterval <= 0
+        then processCommands train commands
+        else selectTrainsToPrint outputInterval . processCommands' train $ commands
 
 processCommands :: Train -> [DriveCommand] -> [Train]
 processCommands = scanl executeCommand
 
-convertToCommands :: [[String]] -> [DriveCommand]
-convertToCommands = map (\ (x:a:_) -> DriveCommand (read x :: Double) (read a :: Double))
-
+-- | Fold function for scanl.
 executeCommand :: Train -> DriveCommand -> Train
 executeCommand ps (DriveCommand x a) = drive ps x (degreesToRadians a)
+
+processCommands' :: Train -> [DriveCommand] -> [Train]
+processCommands' t = concat . fst . foldl executeCommand' ([[t]], t)
+
+-- | Fold function for scanl.
+executeCommand' :: ([[Train]], Train) -> DriveCommand -> ([[Train]], Train)
+executeCommand' lastAccu@(result, lastTrain) (DriveCommand x a) =
+    let newTrains = driveAccumulateTrains lastTrain x (degreesToRadians a)
+    in if newTrains == []
+        then lastAccu
+        else (result ++ [newTrains], last newTrains)
+
+convertToCommands :: [[String]] -> [DriveCommand]
+convertToCommands = map (\ (x:a:_) -> DriveCommand (read x :: Double) (read a :: Double))
 
 formatOutput :: Train -> String
 --formatOutput = encodeTrainAsJson
