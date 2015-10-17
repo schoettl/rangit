@@ -14,7 +14,8 @@ drive :: Train  -- ^ Train to be driven
       -> Train  -- ^ Train at the new position
 drive train len = driveInDirection train (signum len) (abs len)
 
--- | API command: drive the train a distance at a steer angle.
+-- | API command: drive the train a distance at a steer angle. Accumulate all
+-- trains i.e. add train after each simulation step.
 driveAccumulateTrains
     :: Train   -- ^ Train to be driven
     -> Double  -- ^ Distance to be driven (can be positive or negative)
@@ -36,7 +37,8 @@ driveInDirection train sign len angle
         driveRemaining len = driveInDirection updated sign len angle
         updated = moveTrain train sign angle
 
--- | Drive the train a distance at a steer angle.
+-- | Drive the train a distance at a steer angle. Accumulate all
+-- trains i.e. add train after each simulation step.
 -- The sign of the distance is needed for the recursion.
 driveInDirectionAccumulateTrains
     :: Train   -- ^ Train to be driven

@@ -1,6 +1,6 @@
 {-# LANGUAGE FlexibleInstances #-}
 
-module Test.Utils (shouldAlmostBe, shouldAlmostBeAngle) where
+module Test.Utils ((=~), shouldAlmostBe, shouldAlmostBeAngle) where
 
 import Test.HUnit as HU
 import Rangit.Train

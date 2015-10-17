@@ -4,7 +4,7 @@ import Test.Hspec
 import Test.QuickCheck
 import Test.Utils
 import Rangit.Train
-import Data.Angle
+import Rangit.AI
 
 spec :: Spec
 spec = do
@@ -38,6 +38,10 @@ spec = do
                 calculateLeftHitchPosition (testPart (3/4*pi)) `shouldAlmostBe` Position (3/sqrt2) (-3/sqrt2)
             it "works with a negative angle" $ do
                 calculateLeftHitchPosition (testPart (-pi/4)) `shouldAlmostBe` Position (-3/sqrt2) (3/sqrt2)
+            it "works for many different angles" $ property $
+                \ x -> let p = testPart x
+                           d = euclidianDistance (calculateLeftHitchPosition p) (partPosition p)
+                       in d =~ partLength p
         context "negative right length" $ do
             let testPartWithNegativeRightLength :: Double -> Part
                 testPartWithNegativeRightLength angle = Part origin angle 5 (-2)
