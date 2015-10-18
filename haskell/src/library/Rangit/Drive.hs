@@ -15,7 +15,8 @@ drive :: Train  -- ^ Train to be driven
 drive train len = driveInDirection train (signum len) (abs len)
 
 -- | API command: drive the train a distance at a steer angle. Accumulate all
--- trains i.e. add train after each simulation step.
+-- trains i.e. add train after each simulation step. The resulting list is empty
+-- if no simulation step is executed.
 driveAccumulateTrains
     :: Train   -- ^ Train to be driven
     -> Double  -- ^ Distance to be driven (can be positive or negative)
