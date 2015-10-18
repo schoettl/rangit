@@ -63,7 +63,9 @@ calculateError a b = weightedPositionDiff + sum weightedAngleDiffs
     where
         angleDiffs = zipWith (\ ap bp -> abs $ partAngle ap - partAngle bp) a b
         weightedAngleDiffs = weightAngleDiffs angleDiffs
-        weightedPositionDiff = weightPositionDiff $ euclidianDistance (trainPosition a) (trainPosition b)
+        weightedPositionDiff = weightPositionDiff $ euclidianDistance (getPosition a) (getPosition b)
+        getPosition :: Train -> Position
+        getPosition t = trainPosition t --calculateLeftHitchPosition $ head t
 
 -- | Calculate ideal train position for path.
 calculateIdealTrain

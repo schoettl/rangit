@@ -10,12 +10,17 @@ exitWithError() {
     exit 1
 }
 
-for p in paths/*; do
-    for t in trains/*; do
-        pb="${p##*/}"
-        tb="${t##*/}"
-        r="results/${pb%.*}_${tb%.*}.txt"
-        { echo "# $p"; echo "# $t"; } > "$r"
-        ../backupai "$p" <(../inittrain4path "$p" < "$t") | ../simulation --print-interval=0 <(../inittrain4path "$p" < "$t") | ../trains2positions >> "$r"
+for pathFile in paths/*; do
+    for trainFile in trains/*; do
+        pb="${pathFile##*/}"
+        tb="${trainFile##*/}"
+        resultFile="results/${pb%.*}_${tb%.*}.txt"
+        initialTrain="$(../inittrain4path "$pathFile" < "$trainFile")"
+
+        { echo "# $pathFile"; echo "# $trainFile"; } > "$resultFile"
+
+          ../backupai "$pathFile" <(echo "$initialTrain") \
+        | ../simulation --print-interval=0 <(echo "$initialTrain") \
+        | ../trains2positions >> "$resultFile"
     done
 done
