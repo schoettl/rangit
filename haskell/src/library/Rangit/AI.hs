@@ -109,4 +109,7 @@ weightAngleDiffs list = fst $ foldr f ([], 0) list
 weightPositionDiff
     :: Double -- ^ Euclidian distance as difference between different positioned trains
     -> Double -- ^ Weighted position difference
-weightPositionDiff x = let acceptableDiff = 2 in x / acceptableDiff * 2*pi 
+weightPositionDiff x =
+    let acceptablePositionDiff = 2
+        acceptableAngleDiff = pi/4
+    in x / acceptablePositionDiff * acceptableAngleDiff

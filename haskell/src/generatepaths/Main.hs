@@ -24,7 +24,7 @@ functions =
 
 maxValue = 100
 
-step = 0.1
+step = 1
 
 xs = [0, step ..maxValue]
 
