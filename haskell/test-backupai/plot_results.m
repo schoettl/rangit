@@ -25,6 +25,8 @@ plot(pathData(:, 1), pathData(:, 2),
 
 hold on;
 
+# Plot traces of hitches and axis centers
+
 for i = 1:nHitches
   iX = i*2;
   plot(resultData(:, iX), resultData(:, iX+1),
@@ -37,8 +39,17 @@ for i = 1:nAxes
     "linestyle", ':', "color", 'g')
 endfor
 
-nTrainToDraw = 5;
-drawEveryNthTrain = floor(rows(resultData) / nTrainToDraw);
+# Plot some trains
+
+nTrainsToDraw = 10;
+
+nResultData = rows(resultData);
+
+if nTrainsToDraw >= nResultData
+  drawEveryNthTrain = 1;
+else
+  drawEveryNthTrain = round(nResultData / nTrainsToDraw);
+endif
 
 for i = 1:drawEveryNthTrain:rows(resultData)
 
