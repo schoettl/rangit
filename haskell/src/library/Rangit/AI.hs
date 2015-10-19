@@ -41,7 +41,7 @@ backupTrainToFitPath
     -> Train                 -- ^ Train to move
     -> (DriveCommand, Train) -- ^ Best fitted train
 backupTrainToFitPath path@(p:_) train =
-    let distanceToDrive = -euclidianDistance (partPosition $ last train) p
+    let distanceToDrive = - euclidianDistance (trainPosition train) p
         idealTrain = calculateIdealTrain path train
         steerAngles = map ((*(maxSteerAngle/fromIntegral backupSteerPrecision)) . fromIntegral) [-backupSteerPrecision..backupSteerPrecision]
         trains = map (drive train distanceToDrive) steerAngles
@@ -65,7 +65,7 @@ calculateError a b = weightedPositionDiff + sum weightedAngleDiffs
         weightedAngleDiffs = weightAngleDiffs angleDiffs
         weightedPositionDiff = weightPositionDiff $ euclidianDistance (getPosition a) (getPosition b)
         getPosition :: Train -> Position
-        getPosition t = trainPosition t --calculateLeftHitchPosition $ head t
+        getPosition = trainPosition --calculateLeftHitchPosition $ head t
 
 -- | Calculate ideal train position for path.
 calculateIdealTrain
