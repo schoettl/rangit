@@ -59,3 +59,12 @@ calculatePositionOnPart part = calculatePositionByPointAngleLength (partPosition
 
 calculatePositionByPointAngleLength :: Position -> Double -> Double -> Position
 calculatePositionByPointAngleLength (Position x y) a l = Position (x + l * cos a) (y + l * sin a)
+
+reverseTrain :: Train -> Train
+reverseTrain train =
+    let train' = map (\ p -> p { partPosition = calculateLeftHitchPosition p
+                               , partAngle = partAngle p + pi
+                               , partLengthLeft = partLengthRight p
+                               , partLengthRight = partLengthLeft p
+                               }) train
+     in reverse train'

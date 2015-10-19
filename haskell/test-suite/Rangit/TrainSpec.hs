@@ -103,3 +103,18 @@ spec = do
         it "does not change any properties except the position" $ do
             t1 `shouldBe` trailer1 { partPosition = partPosition t1 }
             t2 `shouldBe` trailer2 { partPosition = partPosition t2 }
+
+    describe "reverseTrain" $ do
+        let pc = Part (Position 0 1)  0   1 2
+            t1 = Part (Position 2 3)  pi  3 4
+            t2 = Part (Position 4 5)  0   5 6
+            train = [t2, t1, pc]
+            reversedTrain = reverseTrain train
+        it "part positions become left hitch positions" $ do
+            map partPosition reversedTrain `shouldBe` map calculateLeftHitchPosition (reverse train)
+        it "left lengths become right lengths" $ do
+            map partLengthLeft reversedTrain `shouldBe` map partLengthRight (reverse train)
+        it "right lengths become left lengths" $ do
+            map partLengthRight reversedTrain `shouldBe` map partLengthLeft (reverse train)
+        it "angles are +180° (because left/right hitches are swaped)" $ do
+            map partAngle reversedTrain `shouldBe` map (\ p -> partAngle p + pi) (reverse train)

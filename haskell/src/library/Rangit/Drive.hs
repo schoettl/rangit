@@ -36,7 +36,7 @@ driveInDirection train sign len angle
     | otherwise = driveRemaining $ len - stepLength
     where
         driveRemaining len = driveInDirection updated sign len angle
-        updated = moveTrain train sign angle
+        updated = moveTrain stepLength train sign angle
 
 -- | Drive the train a distance at a steer angle. Accumulate all
 -- trains i.e. add train after each simulation step.
@@ -52,18 +52,26 @@ driveInDirectionAccumulateTrains train sign len angle
     | otherwise = train : driveRemaining (len - stepLength)
     where
         driveRemaining len = driveInDirectionAccumulateTrains updated sign len angle
-        updated = moveTrain train sign angle
+        updated = moveTrain stepLength train sign angle
 
--- | Move the train one step length.
-moveTrain :: Train  -- ^ Train to be moved
+-- | Move the train a given step length.
+moveTrain :: Double -- ^ Step length
+          -> Train  -- ^ Train to be moved
           -> Double -- ^ Sign for step length denoting the direction
           -> Double -- ^ Steer angle for the power car
           -> Train  -- ^ Moved train
-moveTrain ps sign a =
-    let point = partPosition $ last ps
-        angle = a + partAngle (last ps)
+moveTrain stepLength train sign a =
+    let point = partPosition $ last train
+        angle = a + partAngle (last train)
         target = calculatePositionByPointAngleLength point angle (sign * stepLength)
-    in fst $ foldr movePart ([], target) ps
+    in moveTrainToPosition train target
+
+-- | Move the train to a given position.
+moveTrainToPosition
+    :: Train    -- ^ Train to be moved
+    -> Position -- ^ Target train position
+    -> Train    -- ^ Moved train
+moveTrainToPosition trainParts position = fst $ foldr movePart ([], position) trainParts
 
 -- | Move one part of the train by moving the right hitch position to the target position.
 movePart :: Part              -- ^ Current part to be moved
@@ -90,8 +98,21 @@ calculateAngleByArcTan = flip atan2
 --calculateMissingAngleAlpha beta a b = arcsine $ a * sine beta / b
 
 -- | Calculate angle of line between two points.
-calculateAngleBetweenPoints
+calculateAngleBetweenPoints -- TODO fix name!
     :: Position -- ^ Start point of line
     -> Position -- ^ End point of line
     -> Double   -- ^ Angle of line between points
 calculateAngleBetweenPoints (Position x1 y1) (Position x2 y2) = calculateAngleByArcTan (x2 - x1) (y2 - y1)
+
+-- | https://en.wikipedia.org/wiki/Circumscribed_circle#Cartesian_coordinates_2
+calculateSteerAngleToMatchLeftHitch
+    :: Train
+    -> Train
+    -> Double
+calculateSteerAngleToMatchLeftHitch a b = undefined
+
+calculateLineSegmentLengthToMatchLeftHitch
+    :: Train
+    -> Train
+    -> Double
+calculateLineSegmentLengthToMatchLeftHitch a b = undefined
