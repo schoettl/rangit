@@ -23,6 +23,7 @@ library
                      , Rangit.Drive
                      , Rangit.AI
                      , Rangit.IO
+                     , Debug.Trace.Extended
   build-depends:       base
                      , aeson
                      , bytestring

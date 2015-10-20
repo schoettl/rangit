@@ -1,7 +1,7 @@
 module Rangit.Drive where
 
 import Rangit.Train
-import Debug.Trace
+import Debug.Trace.Extended
 
 data DriveCommand = DriveCommand Double Double
 
@@ -129,6 +129,3 @@ calculateSteerAngleToMatchPosition part position =
         angleToPartPosition = calculateAngleBetweenPoints center a
         angleOfTangent = angleToPartPosition - pi
      in angleOfTangent - partAngle part
-
-traceShowIdWithMessage :: Show a => String -> a -> a
-traceShowIdWithMessage msg value = trace (msg ++ show value) value

@@ -2,7 +2,7 @@ module Rangit.AI where
 
 import Rangit.Train
 import Rangit.Drive
-import Debug.Trace
+import Debug.Trace.Extended
 
 type DiscretePath = [Position]
 

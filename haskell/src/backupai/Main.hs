@@ -10,6 +10,7 @@ import Data.Maybe
 import Data.Angle
 import System.Environment (getArgs)
 import System.Console.Docopt
+import Debug.Trace.Extended
 
 patterns :: Docopt
 patterns = [docopt|backupai version 1.0
