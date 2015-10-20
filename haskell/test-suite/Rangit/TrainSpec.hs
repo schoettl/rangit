@@ -23,6 +23,12 @@ spec = do
         it "must return hitch distance even if right length is negative" $ do
             partLength (Part undefined undefined 3 (-2)) `shouldBe` 1
 
+    describe "trainLength" $ do
+        it "must equals the sum of it's part lengths" $ do
+            let pc = Part undefined undefined 3 2
+                tr = Part undefined undefined 5 7
+            trainLength [tr, pc] `shouldBe` partLength tr + partLength pc
+
     describe "calculateLeftHitchPosition" $ do
         let sqrt2 = sqrt 2
         context "positive right length" $ do

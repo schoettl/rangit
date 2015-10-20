@@ -20,7 +20,8 @@ program path input =
     -- unlines in interact function for trailing newline!
 
 positionTrain :: DiscretePath -> Train -> Train
-positionTrain path = translateTrainTo (first path) . fixInitialPositions . alignTrainAngleToFirstPathSegment path . setTrainPositionToFirstPathPoint path
+positionTrain path = (\t -> drive t (trainLength t) 0) . fixInitialPositions . alignTrainAngleToFirstPathSegment path . setTrainPositionToFirstPathPoint path
+-- translateTrain would be more efficient but then I would have to calculate the vector or target point. driving is easier.
 
 alignTrainAngleToFirstPathSegment :: DiscretePath -> Train -> Train
 alignTrainAngleToFirstPathSegment (a:b:_) =

@@ -45,6 +45,9 @@ calculatePosition part fix = part { partPosition = calculateLeftHitchPosition fi
 partLength :: Part -> Double
 partLength p = partLengthLeft p + partLengthRight p
 
+trainLength :: Train -> Double
+trainLength = sum . map partLength
+
 trainPosition :: Train -> Position
 trainPosition = partPosition . last
 
