@@ -60,6 +60,10 @@ calculatePositionOnPart part = calculatePositionByPointAngleLength (partPosition
 calculatePositionByPointAngleLength :: Position -> Double -> Double -> Position
 calculatePositionByPointAngleLength (Position x y) a l = Position (x + l * cos a) (y + l * sin a)
 
+-- | Reverse the train. The only reason to do this is to virtually drive the
+-- train backwards (backupai). This method does not place the power car in the
+-- position of the last trailer and so on. It rather sets the driver to the
+-- end of the train.
 reverseTrain :: Train -> Train
 reverseTrain train =
     let train' = map (\ p -> p { partPosition = calculateLeftHitchPosition p
@@ -69,10 +73,12 @@ reverseTrain train =
                                }) train
      in reverse train'
 
+-- | Translate train to a given position. The train position becomes the new
+-- position and all other part positions are updated accordingly.
 translateTrainTo :: Train -> Position -> Train
 translateTrainTo train (Position x y) =
     let trainPos = trainPosition train
-        vector = (x - (xPos trainPos), y - (yPos trainPos))
+        vector = (x - xPos trainPos, y - yPos trainPos)
     in map (\ p -> p { partPosition = translatePosition (partPosition p) vector }) train
 
 translatePosition :: Position -> (Double, Double) -> Position

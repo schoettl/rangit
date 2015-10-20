@@ -120,3 +120,12 @@ spec = do
             map partAngle reversedTrain `shouldBe` map (\ p -> partAngle p + pi) (reverse train)
         it "reverse . reverse == id (how is this property called again?)" $ do
             reverseTrain (reverseTrain train) `shouldAlmostBe` train
+
+    describe "translateTrainTo" $ do
+        let pc = Part (Position (-1) (-4)) 1 2 3
+            tr = Part (Position (-2) (-3)) 2 3 4
+            train = [tr, pc]
+            target = Position (-3) (-2)
+            newTrPos = Position (-2-3+1) (-3-2+4)
+        it "translate part positions correctly" $ do
+            translateTrainTo train target `shouldBe` [tr { partPosition = newTrPos }, pc { partPosition = target }]
