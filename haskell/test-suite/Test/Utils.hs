@@ -1,6 +1,6 @@
 {-# LANGUAGE FlexibleInstances #-}
 
-module Test.Utils ((=~), shouldAlmostBe, shouldAlmostBeAngle) where
+module Test.Utils ((=~), normalizeAngle, shouldAlmostBe, shouldAlmostBeAngle) where
 
 import Test.HUnit as HU
 import Rangit.Train
@@ -22,6 +22,17 @@ instance AlmostEq Position where
 
 instance AlmostEq (Radians Float) where
     Radians x =~ Radians y = x =~ y
+
+instance AlmostEq Part where
+    Part (Position x y) a l r =~ Part (Position x' y') a' l' r' =
+        x =~ x' &&
+        y =~ y' &&
+        normalizeAngle a =~ normalizeAngle a' &&
+        l =~ l' &&
+        r =~ r'
+
+instance AlmostEq Train where
+    t =~ t' = all (\ (p, p') -> p =~ p') $ zip t t'
  
 -- operator definiton for HSpec:
 shouldAlmostBe :: (Show a, AlmostEq a) => a -> a -> HU.Assertion

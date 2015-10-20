@@ -1,6 +1,7 @@
 module Rangit.Drive where
 
 import Rangit.Train
+import Debug.Trace
 
 data DriveCommand = DriveCommand Double Double
 
@@ -66,7 +67,7 @@ moveTrain stepLength train sign a =
         target = calculatePositionByPointAngleLength point angle (sign * stepLength)
     in moveTrainToPosition train target
 
--- | Move the train to a given position.
+-- | Move the train to a given position in one step.
 moveTrainToPosition
     :: Train    -- ^ Train to be moved
     -> Position -- ^ Target train position
@@ -104,15 +105,30 @@ calculateAngleBetweenPoints -- TODO fix name!
     -> Double   -- ^ Angle of line between points
 calculateAngleBetweenPoints (Position x1 y1) (Position x2 y2) = calculateAngleByArcTan (x2 - x1) (y2 - y1)
 
--- | https://en.wikipedia.org/wiki/Circumscribed_circle#Cartesian_coordinates_2
-calculateSteerAngleToMatchLeftHitch
-    :: Train
-    -> Train
-    -> Double
-calculateSteerAngleToMatchLeftHitch a b = undefined
+-- | Calculate steer angle to reach the target position.
+calculateSteerAngleToMatchPosition
+    :: Part     -- ^ Part (part position and part axis center are on the circle)
+    -> Position -- ^ Target position (also on the circle)
+    -> Double   -- ^ Steer angle for part to reach target position
+calculateSteerAngleToMatchPosition part position =
+    let a = traceShowIdWithMessage "a: " $ partPosition (traceShowIdWithMessage "part: " part)
+        b = traceShowIdWithMessage "b: " $ calculateCenterPosition part
+        c = traceShowIdWithMessage "c: " $ position
+        -- Calculate center of circumscribed circle
+        -- https://en.wikipedia.org/wiki/Circumscribed_circle#Cartesian_coordinates_2
+        d = traceShowIdWithMessage "d: " $ 2 * (xPos a * (yPos b - yPos c) + xPos b * (yPos c - yPos a) + xPos c * (yPos a - yPos b))
+        center = Position
+            { xPos = ((xPos a ^2 + yPos a ^2) * (yPos b - yPos c)
+                    + (xPos b ^2 + yPos b ^2) * (yPos c - yPos a)
+                    + (xPos c ^2 + yPos c ^2) * (yPos a - yPos b)) / d
+            , yPos = ((xPos a ^2 + yPos a ^2) * (xPos c - xPos b)
+                    + (xPos b ^2 + yPos b ^2) * (xPos a - xPos c)
+                    + (xPos c ^2 + yPos c ^2) * (xPos b - xPos a)) / d
+            }
+        -- Calculate steer angle from tangent of circle
+        angleToPartPosition = calculateAngleBetweenPoints center a
+        angleOfTangent = angleToPartPosition - pi
+     in angleOfTangent - partAngle part
 
-calculateLineSegmentLengthToMatchLeftHitch
-    :: Train
-    -> Train
-    -> Double
-calculateLineSegmentLengthToMatchLeftHitch a b = undefined
+traceShowIdWithMessage :: Show a => String -> a -> a
+traceShowIdWithMessage msg value = trace (msg ++ show value) value

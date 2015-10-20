@@ -2,8 +2,7 @@ module Rangit.AI where
 
 import Rangit.Train
 import Rangit.Drive
-import Data.List
-import Data.Ord
+import Debug.Trace
 
 type DiscretePath = [Position]
 
@@ -21,8 +20,7 @@ backupTrainAccumulateDriveCommands
     :: DiscretePath   -- ^ Path to backup train along
     -> Train          -- ^ Current train
     -> [DriveCommand] -- ^ Series of drive commands
-backupTrainAccumulateDriveCommands []   train = error "invalid call: path cannot be empty"
-backupTrainAccumulateDriveCommands [_]  train = []
+backupTrainAccumulateDriveCommands [] _ = []
 backupTrainAccumulateDriveCommands path train =
     let (command, newTrain) = backupTrainToFitPath path train
     in command : backupTrainAccumulateDriveCommands (tail path) newTrain
@@ -32,15 +30,21 @@ backupTrainToFitPath
     :: DiscretePath          -- ^ Path to fit train to
     -> Train                 -- ^ Train to move
     -> (DriveCommand, Train) -- ^ Best fitted train
-backupTrainToFitPath path@(p:_) train =
-    let reversedTrain = reverseTrain train
+backupTrainToFitPath [] _ = error "invalid call: path must not be empty"
+backupTrainToFitPath (p:_) train =
+    let reversedTrain = reverseTrain (traceShowIdWithMessage "orig.train: " train)
         movedTrain = moveTrainToPosition reversedTrain p
         unreversedTrain = reverseTrain movedTrain
-        -- TODO neues power car (last unreversedTrain) mit altem (last train) vergleichen
-        -- TODO und besten lenkwinkel und distance herausfinden.
-        -- TODO und zwar so: power car muss nur mit left hitch stimmen. winkel ist egal!
-        -- TODO -> mit umkreis berechenbar!
-    in undefined
+        oldPowerCar = last train
+        newPowerCar = last unreversedTrain
+        -- besten lenkwinkel und distance herausfinden.
+        -- hier kann einiges optimiert werden!
+        distance = traceShowId $ - euclidianDistance (partPosition oldPowerCar) (partPosition newPowerCar)
+        steerAngle = traceShowId $ calculateSteerAngleToMatchPosition oldPowerCar (calculateCenterPosition newPowerCar)
+        -- Set drive command and drive train
+        driveCommand = DriveCommand distance steerAngle
+        drivenTrain = drive train distance steerAngle
+    in (driveCommand, drivenTrain)
 
 -- | Calculate angle in path at given distance from the start.
 calculateAngleInPath

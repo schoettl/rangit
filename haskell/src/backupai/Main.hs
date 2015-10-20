@@ -12,8 +12,7 @@ import System.Environment (getArgs)
 import System.Console.Docopt
 
 patterns :: Docopt
-patterns = [docopt|
-backupai version 1.0
+patterns = [docopt|backupai version 1.0
 
 usage:
   backupai [options] <pathfile> <trainfile>
@@ -29,7 +28,7 @@ main = do
     args <- parseArgsOrExit patterns =<< getArgs
     path  <- loadPathFromFile  $ getPositionalArg args "pathfile"
     train <- loadTrainFromFile $ getPositionalArg args "trainfile"
-    let commands = backupTrainAccumulateDriveCommands path train
+    let commands = backupTrainAccumulateDriveCommands path $ traceShowIdWithMessage "orig.orig.train: " train
     mapM_ printDriveCommand commands
 
 getPositionalArg :: Arguments -> String -> String

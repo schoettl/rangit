@@ -118,3 +118,5 @@ spec = do
             map partLengthRight reversedTrain `shouldBe` map partLengthLeft (reverse train)
         it "angles are +180° (because left/right hitches are swaped)" $ do
             map partAngle reversedTrain `shouldBe` map (\ p -> partAngle p + pi) (reverse train)
+        it "reverse . reverse == id (how is this property called again?)" $ do
+            reverseTrain (reverseTrain train) `shouldAlmostBe` train

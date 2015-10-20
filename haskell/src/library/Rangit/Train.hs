@@ -68,3 +68,12 @@ reverseTrain train =
                                , partLengthRight = partLengthLeft p
                                }) train
      in reverse train'
+
+translateTrainTo :: Train -> Position -> Train
+translateTrainTo train (Position x y) =
+    let trainPos = trainPosition train
+        vector = (x - (xPos trainPos), y - (yPos trainPos))
+    in map (\ p -> p { partPosition = translatePosition (partPosition p) vector }) train
+
+translatePosition :: Position -> (Double, Double) -> Position
+translatePosition (Position x y) (dx, dy) = Position (x+dx) (y+dy)

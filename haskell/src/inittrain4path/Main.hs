@@ -20,11 +20,11 @@ program path input =
     -- unlines in interact function for trailing newline!
 
 positionTrain :: DiscretePath -> Train -> Train
-positionTrain path = fixInitialPositions . reverseTrain . setTrainPositionToFirstPathPoint path . alignTrainAngleToFirstPathSegment path
+positionTrain path = translateTrainTo (first path) . fixInitialPositions . alignTrainAngleToFirstPathSegment path . setTrainPositionToFirstPathPoint path
 
 alignTrainAngleToFirstPathSegment :: DiscretePath -> Train -> Train
 alignTrainAngleToFirstPathSegment (a:b:_) =
-    let angle = calculateAngleBetweenPoints a b
+    let angle = calculateAngleBetweenPoints b a
     in map (\ p -> p { partAngle = angle })
 
 setTrainPositionToFirstPathPoint :: DiscretePath -> Train -> Train

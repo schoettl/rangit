@@ -67,15 +67,5 @@ spec = do
 
     describe "backupTrainAccumulateDriveCommands" $ do
         let result = backupTrainAccumulateDriveCommands path train
-        it "should return n drive commands where n = len path - 1" $ do
-            length result `shouldBe` length path - 1
-        --it "approaches the target i.e. second point of path from the end" $ do
-        --    isFallingSeries $ map (euclidianDistance (secondFromEnd path) . trainPosition . snd) result
-        --where
-        --    isFallingSeries = foldl f (True, Nothing)
-        --        where
-        --            f (_, Nothing) val = (True, Just val)
-        --            f (True, Just last) val
-        --                | val < last = (True, Just val)
-        --                | otherwise  = (False, Just last)
-        --            f a@(False, _) _ = a
+        it "should return as many drive commands as there are points in path" $ do
+            length result `shouldBe` length path
