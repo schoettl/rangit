@@ -124,12 +124,15 @@ calculateSteerAngleToMatchPosition part position =
 -- https://en.wikipedia.org/wiki/Circumscribed_circle#Cartesian_coordinates_2
 calculateCircumscribedCircleCenter :: Position -> Position -> Position -> Position
 calculateCircumscribedCircleCenter a b c =
-    let d = 2 * (xPos a * (yPos b - yPos c) + xPos b * (yPos c - yPos a) + xPos c * (yPos a - yPos b))
+    let d = 2 * (x a * (y b - y c) + x b * (y c - y a) + x c * (y a - y b))
      in Position
-        { xPos = ((xPos a ^2 + yPos a ^2) * (yPos b - yPos c)
-                + (xPos b ^2 + yPos b ^2) * (yPos c - yPos a)
-                + (xPos c ^2 + yPos c ^2) * (yPos a - yPos b)) / d
-        , yPos = ((xPos a ^2 + yPos a ^2) * (xPos c - xPos b)
-                + (xPos b ^2 + yPos b ^2) * (xPos a - xPos c)
-                + (xPos c ^2 + yPos c ^2) * (xPos b - xPos a)) / d
+        { xPos = ((x a ^2 + y a ^2) * (y b - y c)
+                + (x b ^2 + y b ^2) * (y c - y a)
+                + (x c ^2 + y c ^2) * (y a - y b)) / d
+        , yPos = ((x a ^2 + y a ^2) * (x c - x b)
+                + (x b ^2 + y b ^2) * (x a - x c)
+                + (x c ^2 + y c ^2) * (x b - x a)) / d
         }
+    where
+        x = xPos
+        y = yPos
