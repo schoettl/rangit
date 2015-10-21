@@ -4,6 +4,7 @@ module Test.Utils ((=~), normalizeAngle, shouldAlmostBe, shouldAlmostBeAngle) wh
 
 import Test.HUnit as HU
 import Rangit.Train
+import Rangit.Drive
 import Data.Angle
 
 -- from: http://lambda.jstolarek.com/tag/quickcheck/
@@ -44,9 +45,3 @@ shouldAlmostBeAngle :: Double -> Double -> HU.Assertion
 actual `shouldAlmostBeAngle` expected = normalizeAngle actual =~ normalizeAngle expected HU.@? assertionMsg
     where assertionMsg = "expected: " ++ show expected ++ " = " ++ show (normalizeAngle expected)
                     ++ "\n but got: " ++ show actual   ++ " = " ++ show (normalizeAngle actual)
-
-normalizeAngle :: Double -> Double
-normalizeAngle = mod2pi
-
-mod2pi :: Double -> Double
-mod2pi angle = angle - 2*pi * fromIntegral (floor (angle/(2*pi)))

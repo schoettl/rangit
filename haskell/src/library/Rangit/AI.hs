@@ -30,7 +30,7 @@ backupTrainToFitPath
     :: DiscretePath          -- ^ Path to fit train to
     -> Train                 -- ^ Train to move
     -> (DriveCommand, Train) -- ^ Best fitted train
-backupTrainToFitPath [] _ = error "invalid call: path must not be empty"
+backupTrainToFitPath [] _ = error "invalid call: path must not be empty."
 backupTrainToFitPath (p:_) train =
     let reversedTrain = reverseTrain (traceShowIdWithMessage "orig.train: " train)
         movedTrain = moveTrainToPosition reversedTrain p

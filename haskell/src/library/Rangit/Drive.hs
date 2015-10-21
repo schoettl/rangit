@@ -61,11 +61,13 @@ moveTrain :: Double -- ^ Step length
           -> Double -- ^ Sign for step length denoting the direction
           -> Double -- ^ Steer angle for the power car
           -> Train  -- ^ Moved train
-moveTrain stepLength train sign a =
-    let point = partPosition $ last train
-        angle = a + partAngle (last train)
-        target = calculatePositionByPointAngleLength point angle (sign * stepLength)
-    in moveTrainToPosition train target
+moveTrain stepLength train sign a
+    | a < -pi/2 || a > pi/2 = error "invalid steer angle. must be between -90° and +90° (inclusive)."
+    | otherwise =
+        let point = partPosition $ last train
+            angle = a + partAngle (last train)
+            target = calculatePositionByPointAngleLength point angle (sign * stepLength)
+        in moveTrainToPosition train target
 
 -- | Move the train to a given position in one step.
 moveTrainToPosition
@@ -114,7 +116,17 @@ calculateSteerAngleToMatchPosition part position =
     let a = partPosition part
         b = calculateCenterPosition part
         c = position
-        center = calculateCircumscribedCircleCenter a b c
+        steerAngle = if abs (calculateDForCircumscrCircleCenter a b c) < 0.01
+            then calculateAngleBetweenPoints a c - partAngle part
+            else calculateSteerAngleFromCircle part position
+     in fixSteerAngle steerAngle
+
+calculateSteerAngleFromCircle :: Part -> Position -> Double
+calculateSteerAngleFromCircle part position =
+    let a = partPosition part
+        b = calculateCenterPosition part
+        c = position
+        center = traceShowIdWithMessage "center point: " $ calculateCircumscribedCircleCenter a b c
         -- Calculate steer angle from tangent of circle
         angleToPartPosition = calculateAngleBetweenPoints center a
         angleOfTangent = angleToPartPosition + pi/2
@@ -124,7 +136,7 @@ calculateSteerAngleToMatchPosition part position =
 -- https://en.wikipedia.org/wiki/Circumscribed_circle#Cartesian_coordinates_2
 calculateCircumscribedCircleCenter :: Position -> Position -> Position -> Position
 calculateCircumscribedCircleCenter a b c =
-    let d = 2 * (x a * (y b - y c) + x b * (y c - y a) + x c * (y a - y b))
+    let d = calculateDForCircumscrCircleCenter a b c
      in Position
         { xPos = ((x a ^2 + y a ^2) * (y b - y c)
                 + (x b ^2 + y b ^2) * (y c - y a)
@@ -136,3 +148,26 @@ calculateCircumscribedCircleCenter a b c =
     where
         x = xPos
         y = yPos
+
+-- | Calculate a helper value d that is used by the function calculateCircumscribedCircleCenter.
+-- A property of this function is that it returns 0 if all three points lie on a line.
+calculateDForCircumscrCircleCenter :: Position -> Position -> Position -> Double
+calculateDForCircumscrCircleCenter a b c = 2 * (x a * (y b - y c) + x b * (y c - y a) + x c * (y a - y b))
+    where
+        x = xPos
+        y = yPos
+
+-- | Fix steer angle if it is outside of the range [-90°, 90°].
+-- See function body for details.
+fixSteerAngle :: Double -> Double
+fixSteerAngle = fix . normalizeAngle
+    where
+        fix a | a < 0.5*pi = a
+              | a > 1.5*pi = a
+              | otherwise  = a - pi
+
+normalizeAngle :: Double -> Double
+normalizeAngle = mod2pi
+
+mod2pi :: Double -> Double
+mod2pi angle = angle - 2*pi * fromIntegral (floor (angle/(2*pi)))

@@ -167,13 +167,20 @@ spec = do
 
     describe "calculateSteerAngleToMatchPosition" $ do
         let car = Part origin 0 undefined 1
-            -- circle radius := 1
-            otherPoint = Position 0.5 (- sqrt 0.75)
-            angleToPartPosition = pi/3 -- inner angles in triangle
-            angleOfTangent = angleToPartPosition + pi/2 -- draw it or believe
-            steerAngle = - (pi - angleOfTangent)
-        it "works for a horizontal car" $ do
-            calculateSteerAngleToMatchPosition car otherPoint `shouldAlmostBeAngle` steerAngle
+        context "using exact circle algorithm for not too large circles" $ do
+            let -- circle radius := 1
+                otherPoint = Position 0.5 (- sqrt 0.75)
+                angleToPartPosition = pi/3 -- inner angles in triangle
+                angleOfTangent = angleToPartPosition + pi/2 -- draw it or believe
+                steerAngle = - (pi - angleOfTangent)
+            it "works for a horizontal car and a not too large turning circle" $ do
+                calculateSteerAngleToMatchPosition car otherPoint `shouldAlmostBeAngle` steerAngle
+        context "using simple algorithm for large turning circles" $ do
+            let position = Position 10 0.01
+            it "preconditions for simple algorithm are given (compare threshold to actual code of tested function!)" $ do
+                calculateDForCircumscrCircleCenter (partPosition car) (calculateCenterPosition car) position `shouldSatisfy` (<0.01)
+            it "calculates the simple steer angle correctly" $ do
+                calculateSteerAngleToMatchPosition car position `shouldAlmostBe` calculateAngleBetweenPoints origin position
 
     describe "calculateCircumscribedCircleCenter" $ do
         let a = origin
@@ -187,3 +194,17 @@ spec = do
                 args = [ (a, b, c) | a <- points, b <- points, c <- points, a /= b && b /= c && c /= a] -- permute does the same but returns a lists and no tuples
             forM_ args $ \ arg ->
                 uncurry3 calculateCircumscribedCircleCenter arg `shouldAlmostBe` expectedCenter
+
+    describe "calculateDForCircumscrCircleCenter" $ do
+        let a = origin
+            b = Position 1 (-1)
+            c = Position (-1) 1
+            pointOnLine m = Position (m*1) (m*(-1))
+        it "equals 0 if points are on a line" $ do
+            calculateDForCircumscrCircleCenter a b c `shouldAlmostBe` 0
+        it "equals 0 for different a' on the line" $ property $
+            \m -> calculateDForCircumscrCircleCenter (pointOnLine m) b c =~ 0
+        it "equals 0 for different b' on the line" $ property $
+            \m -> calculateDForCircumscrCircleCenter a (pointOnLine m) c =~ 0
+        it "equals 0 for different c' on the line" $ property $
+            \m -> calculateDForCircumscrCircleCenter a b (pointOnLine m) =~ 0
