@@ -5,6 +5,8 @@ import Test.QuickCheck
 import Test.Utils
 import Rangit.Train
 import Rangit.Drive
+import Control.Monad
+import Data.Tuple.HT
 
 spec :: Spec
 spec = do
@@ -109,6 +111,20 @@ spec = do
             it "calculates new angle correctly" $ do
                 partAngle movedCar `shouldSatisfy` (>pi/2)
 
+    describe "moveTrainToPosition" $ do
+        context "just a power car" $ do
+            let pc = Part origin 0 0 1
+                train = [pc]
+            it "works for a target in front of" $ do
+                let target = Position 1 (-2)
+                moveTrainToPosition train target `shouldAlmostBe` [pc { partPosition = target, partAngle = - pi/4 }]
+            it "works for a target right below the axis center" $ do
+                let target = Position (-1) (-1)
+                moveTrainToPosition train target `shouldAlmostBe` [pc { partPosition = target, partAngle = - pi/2 }]
+            it "works for a target behind the train" $ do
+                let target = Position (-2) 1
+                moveTrainToPosition train target `shouldAlmostBe` [pc { partPosition = target, partAngle = 3*pi/4 }]
+
     describe "movePart" $ do
         context "move one part" $ do
             let powerCar = Part origin 0 0 1
@@ -148,3 +164,26 @@ spec = do
             \ x -> calculateAngleByArcTan x 1 > 0
         it "angles mirrowed at the horizontal line differ olny in sign" $ property $
             \ x -> calculateAngleByArcTan x 1 == -calculateAngleByArcTan x (-1)
+
+    describe "calculateSteerAngleToMatchPosition" $ do
+        let car = Part origin 0 undefined 1
+            -- circle radius := 1
+            otherPoint = Position 0.5 (- sqrt 0.75)
+            angleToPartPosition = pi/3 -- inner angles in triangle
+            angleOfTangent = angleToPartPosition + pi/2 -- draw it or believe
+            steerAngle = - (pi - angleOfTangent)
+        it "works for a horizontal car" $ do
+            calculateSteerAngleToMatchPosition car otherPoint `shouldAlmostBeAngle` steerAngle
+
+    describe "calculateCircumscribedCircleCenter" $ do
+        let a = origin
+            b = Position (-1) 0
+            c = Position 0.5 (- sqrt 0.75)
+            expectedCenter = Position (-0.5) (- sqrt 0.75)
+        it "works for simple case" $ do
+            calculateCircumscribedCircleCenter a b c `shouldAlmostBe` expectedCenter
+        it "is independent of the argument order" $ do
+            let points = [a, b, c]
+                args = [ (a, b, c) | a <- points, b <- points, c <- points, a /= b && b /= c && c /= a] -- permute does the same but returns a lists and no tuples
+            forM_ args $ \ arg ->
+                uncurry3 calculateCircumscribedCircleCenter arg `shouldAlmostBe` expectedCenter

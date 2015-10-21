@@ -149,7 +149,13 @@ executable outputtrain
 
 
 test-suite hspec
-  build-depends:      base, hspec, QuickCheck, rangit, AC-Angle, HUnit
+  build-depends:      base
+                    , hspec
+                    , QuickCheck
+                    , rangit
+                    , AC-Angle
+                    , HUnit
+                    , utility-ht
   default-language:   Haskell2010
   hs-source-dirs:     test-suite
   main-is:            Spec.hs

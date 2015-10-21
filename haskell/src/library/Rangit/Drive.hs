@@ -111,21 +111,25 @@ calculateSteerAngleToMatchPosition
     -> Position -- ^ Target position (also on the circle)
     -> Double   -- ^ Steer angle for part to reach target position
 calculateSteerAngleToMatchPosition part position =
-    let a = traceShowIdWithMessage "a: " $ partPosition (traceShowIdWithMessage "part: " part)
-        b = traceShowIdWithMessage "b: " $ calculateCenterPosition part
-        c = traceShowIdWithMessage "c: " $ position
-        -- Calculate center of circumscribed circle
-        -- https://en.wikipedia.org/wiki/Circumscribed_circle#Cartesian_coordinates_2
-        d = traceShowIdWithMessage "d: " $ 2 * (xPos a * (yPos b - yPos c) + xPos b * (yPos c - yPos a) + xPos c * (yPos a - yPos b))
-        center = Position
-            { xPos = ((xPos a ^2 + yPos a ^2) * (yPos b - yPos c)
-                    + (xPos b ^2 + yPos b ^2) * (yPos c - yPos a)
-                    + (xPos c ^2 + yPos c ^2) * (yPos a - yPos b)) / d
-            , yPos = ((xPos a ^2 + yPos a ^2) * (xPos c - xPos b)
-                    + (xPos b ^2 + yPos b ^2) * (xPos a - xPos c)
-                    + (xPos c ^2 + yPos c ^2) * (xPos b - xPos a)) / d
-            }
+    let a = partPosition part
+        b = calculateCenterPosition part
+        c = position
+        center = calculateCircumscribedCircleCenter a b c
         -- Calculate steer angle from tangent of circle
         angleToPartPosition = calculateAngleBetweenPoints center a
-        angleOfTangent = angleToPartPosition - pi
-     in angleOfTangent - partAngle part
+        angleOfTangent = angleToPartPosition + pi/2
+     in partAngle part - (pi - angleOfTangent)
+
+-- | Calculate center of circumscribed circle.
+-- https://en.wikipedia.org/wiki/Circumscribed_circle#Cartesian_coordinates_2
+calculateCircumscribedCircleCenter :: Position -> Position -> Position -> Position
+calculateCircumscribedCircleCenter a b c =
+    let d = 2 * (xPos a * (yPos b - yPos c) + xPos b * (yPos c - yPos a) + xPos c * (yPos a - yPos b))
+     in Position
+        { xPos = ((xPos a ^2 + yPos a ^2) * (yPos b - yPos c)
+                + (xPos b ^2 + yPos b ^2) * (yPos c - yPos a)
+                + (xPos c ^2 + yPos c ^2) * (yPos a - yPos b)) / d
+        , yPos = ((xPos a ^2 + yPos a ^2) * (xPos c - xPos b)
+                + (xPos b ^2 + yPos b ^2) * (xPos a - xPos c)
+                + (xPos c ^2 + yPos c ^2) * (xPos b - xPos a)) / d
+        }

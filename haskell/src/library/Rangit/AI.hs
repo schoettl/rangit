@@ -39,8 +39,8 @@ backupTrainToFitPath (p:_) train =
         newPowerCar = last unreversedTrain
         -- besten lenkwinkel und distance herausfinden.
         -- hier kann einiges optimiert werden!
-        distance = traceShowId $ - euclidianDistance (partPosition oldPowerCar) (partPosition newPowerCar)
-        steerAngle = traceShowId $ calculateSteerAngleToMatchPosition oldPowerCar (calculateCenterPosition newPowerCar)
+        distance = traceShowIdWithMessage "distance: " $ - euclidianDistance (partPosition oldPowerCar) (partPosition newPowerCar)
+        steerAngle = traceShowIdWithMessage "steer angle: " $ calculateSteerAngleToMatchPosition oldPowerCar (calculateCenterPosition newPowerCar)
         -- Set drive command and drive train
         driveCommand = DriveCommand distance steerAngle
         drivenTrain = drive train distance steerAngle
