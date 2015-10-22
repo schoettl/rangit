@@ -8,6 +8,10 @@ data DriveCommand = DriveCommand Double Double
 -- | Length to drive in one calculation step.
 stepLength = 0.01
 
+-- | The result of calculateDForCircumscrCircleCenter must be greater than this
+-- threshold to apply the turning circle algorithm/formulas.
+thresholdForCircleAlgorithm = 0.01
+
 -- | API command: drive the train a distance at a steer angle.
 drive :: Train  -- ^ Train to be driven
       -> Double -- ^ Distance to be driven (can be positive or negative)
@@ -116,7 +120,7 @@ calculateSteerAngleToMatchPosition part position =
     let a = partPosition part
         b = calculateCenterPosition part
         c = position
-        steerAngle = if abs (calculateDForCircumscrCircleCenter a b c) < 0.01
+        steerAngle = if abs (calculateDForCircumscrCircleCenter a b c) < thresholdForCircleAlgorithm
             then calculateAngleBetweenPoints a c - partAngle part
             else calculateSteerAngleFromCircle part position
      in fixSteerAngle steerAngle
@@ -129,8 +133,8 @@ calculateSteerAngleFromCircle part position =
         center = traceShowIdWithMessage "center point: " $ calculateCircumscribedCircleCenter a b c
         -- Calculate steer angle from tangent of circle
         angleToPartPosition = calculateAngleBetweenPoints center a
-        angleOfTangent = angleToPartPosition + pi/2
-     in partAngle part - (pi - angleOfTangent)
+        angleOfTangent = traceShowIdWithMessage "angle of tangent: " $ angleToPartPosition + pi/2
+     in traceShowIdWithMessage "steer angle unfixed: " $ angleOfTangent - partAngle part
 
 -- | Calculate center of circumscribed circle.
 -- https://en.wikipedia.org/wiki/Circumscribed_circle#Cartesian_coordinates_2

@@ -173,12 +173,14 @@ spec = do
                 angleToPartPosition = pi/3 -- inner angles in triangle
                 angleOfTangent = angleToPartPosition + pi/2 -- draw it or believe
                 steerAngle = - (pi - angleOfTangent)
+            it "preconditions for circle algorithm are given" $ do
+                calculateDForCircumscrCircleCenter (partPosition car) (calculateCenterPosition car) otherPoint `shouldSatisfy` (>=thresholdForCircleAlgorithm)
             it "works for a horizontal car and a not too large turning circle" $ do
                 calculateSteerAngleToMatchPosition car otherPoint `shouldAlmostBeAngle` steerAngle
         context "using simple algorithm for large turning circles" $ do
             let position = Position 10 0.01
-            it "preconditions for simple algorithm are given (compare threshold to actual code of tested function!)" $ do
-                calculateDForCircumscrCircleCenter (partPosition car) (calculateCenterPosition car) position `shouldSatisfy` (<0.01)
+            it "preconditions for simple algorithm are given" $ do
+                calculateDForCircumscrCircleCenter (partPosition car) (calculateCenterPosition car) position `shouldSatisfy` (<thresholdForCircleAlgorithm)
             it "calculates the simple steer angle correctly" $ do
                 calculateSteerAngleToMatchPosition car position `shouldAlmostBe` calculateAngleBetweenPoints origin position
 
