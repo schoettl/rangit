@@ -1,7 +1,6 @@
 module Rangit.Drive where
 
 import Rangit.Train
-import Debug.Trace.Extended
 
 data DriveCommand = DriveCommand Double Double
 
@@ -130,11 +129,11 @@ calculateSteerAngleFromCircle part position =
     let a = partPosition part
         b = calculateCenterPosition part
         c = position
-        center = traceShowIdWithMessage "center point: " $ calculateCircumscribedCircleCenter a b c
+        center = calculateCircumscribedCircleCenter a b c
         -- Calculate steer angle from tangent of circle
         angleToPartPosition = calculateAngleBetweenPoints center a
-        angleOfTangent = traceShowIdWithMessage "angle of tangent: " $ angleToPartPosition + pi/2
-     in traceShowIdWithMessage "steer angle unfixed: " $ angleOfTangent - partAngle part
+        angleOfTangent = angleToPartPosition + pi/2
+     in angleOfTangent - partAngle part
 
 -- | Calculate center of circumscribed circle.
 -- https://en.wikipedia.org/wiki/Circumscribed_circle#Cartesian_coordinates_2
