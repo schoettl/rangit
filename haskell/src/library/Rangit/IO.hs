@@ -9,8 +9,8 @@ import System.IO
 import Data.Aeson
 import qualified Data.ByteString.Lazy.Char8 as BSL
 
-instance ToJSON Position where
-    toJSON (Position x y) = object [ "x" .= x , "y" .= y ]
+instance ToJSON Vector2 where
+    toJSON (Vector2 x y) = object [ "x" .= x , "y" .= y ]
 
 instance ToJSON Part where
     toJSON (Part position angle leftLength rightLength) =

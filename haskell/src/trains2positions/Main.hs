@@ -14,6 +14,3 @@ program input =
 
 positionsToStrings :: [Position] -> [String]
 positionsToStrings ps = show (length ps) : map show (concatMap positionToList ps)
-
-positionToList :: Position -> [Double]
-positionToList (Position x y) = [x, y]

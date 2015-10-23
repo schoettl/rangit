@@ -108,7 +108,7 @@ calculateAngleBetweenPoints -- TODO fix name!
     :: Position -- ^ Start point of line
     -> Position -- ^ End point of line
     -> Double   -- ^ Angle of line between points
-calculateAngleBetweenPoints (Position x1 y1) (Position x2 y2) = calculateAngleByArcTan (x2 - x1) (y2 - y1)
+calculateAngleBetweenPoints (Vector2 x1 y1) (Vector2 x2 y2) = calculateAngleByArcTan (x2 - x1) (y2 - y1)
 
 -- | Calculate steer angle to reach the target position.
 calculateSteerAngleToMatchPosition
@@ -140,14 +140,13 @@ calculateSteerAngleFromCircle part position =
 calculateCircumscribedCircleCenter :: Position -> Position -> Position -> Position
 calculateCircumscribedCircleCenter a b c =
     let d = calculateDForCircumscrCircleCenter a b c
-     in Position
-        { xPos = ((x a ^2 + y a ^2) * (y b - y c)
-                + (x b ^2 + y b ^2) * (y c - y a)
-                + (x c ^2 + y c ^2) * (y a - y b)) / d
-        , yPos = ((x a ^2 + y a ^2) * (x c - x b)
-                + (x b ^2 + y b ^2) * (x a - x c)
-                + (x c ^2 + y c ^2) * (x b - x a)) / d
-        }
+     in Vector2
+        (((x a ^2 + y a ^2) * (y b - y c)
+                 + (x b ^2 + y b ^2) * (y c - y a)
+                 + (x c ^2 + y c ^2) * (y a - y b)) / d)
+        (((x a ^2 + y a ^2) * (x c - x b)
+                 + (x b ^2 + y b ^2) * (x a - x c)
+                 + (x c ^2 + y c ^2) * (x b - x a)) / d)
     where
         x = xPos
         y = yPos

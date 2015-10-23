@@ -120,7 +120,7 @@ callWithPosition :: (Double -> Double -> Render ()) -> Position -> Render ()
 callWithPosition f p = uncurry f $ (scaleAndOffset . positionToPair) p
 
 positionToPair :: Position -> (Double, Double)
-positionToPair p = (xPos p, yPos p)
+positionToPair (Vector2 x y) = (x, y)
 
 scaleAndOffset :: (Double, Double) -> (Double, Double)
 scaleAndOffset (x, y) = let factor = 10 in (factor*x + 200, factor*y + 200)
