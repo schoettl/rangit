@@ -1,6 +1,7 @@
 module Rangit.Train where
 
 import Text.Read
+import Data.Vector.V2 (Vector2 (Vector2))
 
 -- | A position in the map.
 data Position = Position { xPos, yPos :: Double } deriving (Eq, Show, Read)
@@ -86,3 +87,6 @@ translateTrainTo train (Position x y) =
 
 translatePosition :: Position -> (Double, Double) -> Position
 translatePosition (Position x y) (dx, dy) = Position (x+dx) (y+dy)
+
+positionToVector2 :: Position -> Vector2
+positionToVector2 (Position x y) = Vector2 x y
