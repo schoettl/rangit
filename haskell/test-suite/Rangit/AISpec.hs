@@ -61,11 +61,6 @@ spec = do
         path = [origin, Vector2 (-1) 0, Vector2 (-2) (-1)]
         train = fixInitialPositions [Part origin 0 0 1, Part (Vector2 2 0) 0 1 1]
 
-    describe "backupTrain" $ do
-        let newTrain = backupTrain path train
-            target = secondFromEnd path
-        return ()
-
     describe "backupTrainAccumulateDriveCommands" $ do
         let result = backupTrainAccumulateDriveCommands path train
         it "should return as many drive commands as there are points in path" $ do

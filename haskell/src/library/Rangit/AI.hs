@@ -7,25 +7,20 @@ import Data.Vector.Extended (Vector2 (Vector2), vdot, euclidianDistance)
 
 type DiscretePath = [Position]
 
--- | Backup train along the given path.
-backupTrain
-    :: DiscretePath -- ^ Path to backup train along
-    -> Train        -- ^ Current train
-    -> Train        -- ^ Best driven train
-backupTrain []   train = train
-backupTrain [_]  train = train
-backupTrain path train = backupTrain (tail path) (snd $ backupTrainToFitPath path train)
-
 -- | Backup train along the given path accumulating drive commands.
 backupTrainAccumulateDriveCommands
     :: DiscretePath   -- ^ Path to backup train along
     -> Train          -- ^ Current train
     -> [DriveCommand] -- ^ Series of drive commands
-backupTrainAccumulateDriveCommands [] _ = []
 backupTrainAccumulateDriveCommands path train =
-    let correctedPath = correctPath train path
-        (command, newTrain) = backupTrainToFitPath correctedPath train
-    in command : backupTrainAccumulateDriveCommands (tail path) newTrain
+    let correctedPath = removeOverrunnedPoints train path
+     in startRecursion correctedPath train
+    where
+        startRecursion :: DiscretePath -> Train -> [DriveCommand]
+        startRecursion [] _ = []
+        startRecursion path train =
+            let (command, newTrain) = backupTrainToFitPath path train in
+                command : backupTrainAccumulateDriveCommands (tail path) newTrain
 
 -- | Move train along path fitting the left-most hitch to the first waypoint.
 backupTrainToFitPath
@@ -60,12 +55,6 @@ calculateAngleInPath path@(a:b:_) distance = f path (euclidianDistance a b)
             then calculateAngleBetweenPoints a b
             else f (b:c:rest) (distToB + euclidianDistance b c)
 calculateAngleInPath _ _ = error "path must have at least two points"
-
-correctPath :: Train -> DiscretePath -> DiscretePath
-correctPath train path = repairIfNecessary $ removeOverrunnedPoints train path
-    where
-        repairIfNecessary [] = [last path]
-        repairIfNecessary ps = ps
 
 removeOverrunnedPoints :: Train -> DiscretePath -> DiscretePath
 removeOverrunnedPoints (lastPart:_) = dropWhile badWaypoint
