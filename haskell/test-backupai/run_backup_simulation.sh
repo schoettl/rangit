@@ -17,7 +17,9 @@ for pathFile in paths/*; do
         resultFile="results/${pb%.*}_${tb%.*}.txt"
         initialTrain="$(../inittrain4path "$pathFile" < "$trainFile")"
 
-        { echo "# $pathFile"; echo "# $trainFile"; } > "$resultFile"
+        echo "Processing: $pb with $tb" >&2
+
+        echo -e "# $pathFile\n# $trainFile" > "$resultFile"
 
           ../backupai "$pathFile" <(echo "$initialTrain") \
         | ../simulation --print-interval=0 <(echo "$initialTrain") \
