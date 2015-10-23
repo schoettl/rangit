@@ -7,6 +7,7 @@ import Rangit.Train
 import Rangit.AI
 import Data.Angle
 import Control.Exception (evaluate)
+import Data.Vector.Extended (Vector2 (Vector2), euclidianDistance)
 
 spec :: Spec
 spec = do

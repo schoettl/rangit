@@ -6,6 +6,7 @@ import Test.HUnit as HU
 import Rangit.Train
 import Rangit.Drive
 import Data.Angle
+import Data.Vector.Extended (Vector2 (Vector2))
 
 -- from: http://lambda.jstolarek.com/tag/quickcheck/
 

@@ -7,6 +7,7 @@ import Rangit.Train
 import Rangit.AI
 import System.IO
 import Data.Aeson
+import Data.Vector.Extended (Vector2 (Vector2))
 import qualified Data.ByteString.Lazy.Char8 as BSL
 
 instance ToJSON Vector2 where
@@ -47,4 +48,4 @@ doReadFile :: (Handle -> IO a) -> FilePath -> IO a
 doReadFile f s = f =<< openFile s ReadMode
 
 toPosition :: [Double] -> Position
-toPosition (x:y:_) = Position x y
+toPosition (x:y:_) = Vector2 x y

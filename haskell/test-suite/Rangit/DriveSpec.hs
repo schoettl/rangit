@@ -7,6 +7,7 @@ import Rangit.Train
 import Rangit.Drive
 import Control.Monad
 import Data.Tuple.HT
+import Data.Vector.Extended (Vector2 (Vector2))
 
 spec :: Spec
 spec = do

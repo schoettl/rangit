@@ -11,6 +11,7 @@ import Rangit.Train
 import Rangit.Drive
 import Control.Monad
 import System.Console.Docopt
+import Data.Vector.Extended (Vector2 (Vector2))
 
 -- | File descriptor: 0 = stdin
 stdin :: FD

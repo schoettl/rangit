@@ -1,6 +1,7 @@
 module Rangit.Drive where
 
 import Rangit.Train
+import Data.Vector.Extended (Vector2 (Vector2), v2x, v2y)
 
 data DriveCommand = DriveCommand Double Double
 
@@ -148,16 +149,16 @@ calculateCircumscribedCircleCenter a b c =
                  + (x b ^2 + y b ^2) * (x a - x c)
                  + (x c ^2 + y c ^2) * (x b - x a)) / d)
     where
-        x = xPos
-        y = yPos
+        x = v2x
+        y = v2y
 
 -- | Calculate a helper value d that is used by the function calculateCircumscribedCircleCenter.
 -- A property of this function is that it returns 0 if all three points lie on a line.
 calculateDForCircumscrCircleCenter :: Position -> Position -> Position -> Double
 calculateDForCircumscrCircleCenter a b c = 2 * (x a * (y b - y c) + x b * (y c - y a) + x c * (y a - y b))
     where
-        x = xPos
-        y = yPos
+        x = v2x
+        y = v2y
 
 -- | Fix steer angle if it is outside of the range [-90°, 90°].
 -- See function body for details.
