@@ -24,7 +24,7 @@ backupTrainAccumulateDriveCommands
     -> [DriveCommand] -- ^ Series of drive commands
 backupTrainAccumulateDriveCommands [] _ = []
 backupTrainAccumulateDriveCommands path train =
-    let correctedPath = removeOverrunnedPoints train path
+    let correctedPath = correctPath train path
         (command, newTrain) = backupTrainToFitPath correctedPath train
     in command : backupTrainAccumulateDriveCommands (tail path) newTrain
 
@@ -64,6 +64,12 @@ calculateAngleInPath _ _ = error "path must have at least two points"
 
 -- | Calculate euclidian distance between two positions.
 euclidianDistance (Position x1 y1) (Position x2 y2) = sqrt $ (x2-x1)^2 + (y2-y1)^2
+
+correctPath :: Train -> DiscretePath -> DiscretePath
+correctPath train path = repairIfNecessary $ removeOverrunnedPoints train path
+    where
+        repairIfNecessary [] = [last path]
+        repairIfNecessary ps = ps
 
 removeOverrunnedPoints :: Train -> DiscretePath -> DiscretePath
 removeOverrunnedPoints (lastPart:_) = dropWhile badWaypoint
