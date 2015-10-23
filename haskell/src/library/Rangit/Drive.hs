@@ -169,8 +169,10 @@ fixSteerAngle = fix . normalizeAngle
               | a > 1.5*pi = a
               | otherwise  = a - pi
 
+-- | Normalize angle so that it is between 0 (inclusive) and 2 pi (exclusive).
 normalizeAngle :: Double -> Double
-normalizeAngle = mod2pi
+normalizeAngle = (`modReal` (2*pi))
 
-mod2pi :: Double -> Double
-mod2pi angle = angle - 2*pi * fromIntegral (floor (angle/(2*pi)))
+-- | Modulo operation for instances of Real type class.
+modReal :: Real a => a -> a -> a
+modReal x m = x - m * fromIntegral (floor $ realToFrac x / realToFrac m)

@@ -210,3 +210,17 @@ spec = do
             \m -> calculateDForCircumscrCircleCenter a (pointOnLine m) c =~ 0
         it "equals 0 for different c' on the line" $ property $
             \m -> calculateDForCircumscrCircleCenter a b (pointOnLine m) =~ 0
+
+    describe "modReal" $ do
+        context "some properties of modulo" $ do
+            let modulus = 13 :: Int
+            it "behaves like mod for instances of Integral type class" $ property $
+                \x -> x `modReal` modulus == x `mod` modulus
+            it "result is always positive (for positive modulus)" $ property $
+                \x -> x `modReal` modulus >= 0
+        context "modulo 2 pi" $ do
+            let modulus = 2*pi
+            it "2 pi modulo 2 pi" $ do
+                ((2*pi) `modReal` modulus) `shouldBe` 0
+            it "3 pi modulo 2 pi" $ do
+                ((3*pi) `modReal` modulus) `shouldBe` pi
