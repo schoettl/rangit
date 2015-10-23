@@ -3,8 +3,7 @@ module Rangit.AI where
 import Rangit.Train
 import Rangit.Drive
 -- import Data.Vector from package AC-Vector does not work because cabal favours package vector
-import Data.Vector.Class (vdot)
-import Data.Vector.V2 (Vector2 (Vector2))
+import Data.Vector.Extended (Vector2 (Vector2), vdot, euclidianDistance)
 
 type DiscretePath = [Position]
 
@@ -61,9 +60,6 @@ calculateAngleInPath path@(a:b:_) distance = f path (euclidianDistance a b)
             then calculateAngleBetweenPoints a b
             else f (b:c:rest) (distToB + euclidianDistance b c)
 calculateAngleInPath _ _ = error "path must have at least two points"
-
--- | Calculate euclidian distance between two positions.
-euclidianDistance (Position x1 y1) (Position x2 y2) = sqrt $ (x2-x1)^2 + (y2-y1)^2
 
 correctPath :: Train -> DiscretePath -> DiscretePath
 correctPath train path = repairIfNecessary $ removeOverrunnedPoints train path

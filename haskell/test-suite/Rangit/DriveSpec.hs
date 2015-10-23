@@ -7,6 +7,7 @@ import Rangit.Train
 import Rangit.Drive
 import Control.Monad
 import Data.Tuple.HT
+import Data.Vector.Extended (Vector2 (Vector2))
 
 spec :: Spec
 spec = do
@@ -18,7 +19,7 @@ spec = do
             let movedTrain = drive train 1 0
                 [movedCar] = movedTrain
             it "calculates new position correctly" $ do
-                let Position x y = partPosition movedCar
+                let Vector2 x y = partPosition movedCar
                 x `shouldSatisfy` \x -> (x > (1-stepLength)) && x < (1+stepLength)
             it "calculates new angle" $ do
                 partAngle movedCar `shouldBe` 0
@@ -26,7 +27,7 @@ spec = do
             let movedTrain = drive train (-1) 0
                 [movedCar] = movedTrain
             it "calculates new position correctly" $ do
-                let Position x y = partPosition movedCar
+                let Vector2 x y = partPosition movedCar
                 x `shouldSatisfy` \x -> (x > (-1-stepLength)) && x < (-1+stepLength)
                 y `shouldBe` 0
             it "calculates new angle correctly" $ do
@@ -37,7 +38,7 @@ spec = do
                 movedTrain = drive trainWithTrailer (-1) 0
                 movedTrailer:_ = movedTrain
             it "calculates new trailer position" $ do
-                let Position x y = partPosition movedTrailer
+                let Vector2 x y = partPosition movedTrailer
                 x `shouldSatisfy` \x -> (x > (-2-stepLength)) && x < (-2+stepLength)
                 y `shouldBe` 0
             it "calculates new angle correctly" $ do
@@ -47,7 +48,7 @@ spec = do
                 movedTrain = drive train 1 (pi/4)
                 [movedCar] = movedTrain
             it "calculates new position plausible" $ do
-                let Position x y = partPosition movedCar
+                let Vector2 x y = partPosition movedCar
                 x `shouldSatisfy` (<0)
                 y `shouldSatisfy` (>0)
             it "calculates new angle correctly" $ do
@@ -73,7 +74,7 @@ spec = do
                 movedTrain = last allTrains
                 [movedCar] = movedTrain
             it "calculates new position correctly" $ do
-                let Position x y = partPosition movedCar
+                let Vector2 x y = partPosition movedCar
                 x `shouldSatisfy` \x -> (x > (1-stepLength)) && x < (1+stepLength)
             it "calculates new angle" $ do
                 partAngle movedCar `shouldBe` 0
@@ -82,7 +83,7 @@ spec = do
                 movedTrain = last allTrains
                 [movedCar] = movedTrain
             it "calculates new position correctly" $ do
-                let Position x y = partPosition movedCar
+                let Vector2 x y = partPosition movedCar
                 x `shouldSatisfy` \x -> (x > (-1-stepLength)) && x < (-1+stepLength)
                 y `shouldBe` 0
             it "calculates new angle correctly" $ do
@@ -94,7 +95,7 @@ spec = do
                 movedTrain = last allTrains
                 movedTrailer:_ = movedTrain
             it "calculates new trailer position" $ do
-                let Position x y = partPosition movedTrailer
+                let Vector2 x y = partPosition movedTrailer
                 x `shouldSatisfy` \x -> (x > (-2-2*stepLength)) && x < (-2+2*stepLength)
                 y `shouldBe` 0
             it "calculates new angle correctly" $ do
@@ -105,7 +106,7 @@ spec = do
                 movedTrain = last allTrains
                 [movedCar] = movedTrain
             it "calculates new position plausible" $ do
-                let Position x y = partPosition movedCar
+                let Vector2 x y = partPosition movedCar
                 x `shouldSatisfy` (<0)
                 y `shouldSatisfy` (>0)
             it "calculates new angle correctly" $ do
@@ -116,19 +117,19 @@ spec = do
             let pc = Part origin 0 0 1
                 train = [pc]
             it "works for a target in front of" $ do
-                let target = Position 1 (-2)
+                let target = Vector2 1 (-2)
                 moveTrainToPosition train target `shouldAlmostBe` [pc { partPosition = target, partAngle = - pi/4 }]
             it "works for a target right below the axis center" $ do
-                let target = Position (-1) (-1)
+                let target = Vector2 (-1) (-1)
                 moveTrainToPosition train target `shouldAlmostBe` [pc { partPosition = target, partAngle = - pi/2 }]
             it "works for a target behind the train" $ do
-                let target = Position (-2) 1
+                let target = Vector2 (-2) 1
                 moveTrainToPosition train target `shouldAlmostBe` [pc { partPosition = target, partAngle = 3*pi/4 }]
 
     describe "movePart" $ do
         context "move one part" $ do
             let powerCar = Part origin 0 0 1
-                targetPosition = Position 1 1
+                targetPosition = Vector2 1 1
                 newAngle = atan $ 1 / (1 + 1) -- 1 from dimensions of power car
                 ([pc], _) = movePart powerCar ([], targetPosition)
             it "updates the position" $ do
@@ -137,7 +138,7 @@ spec = do
                 partAngle pc `shouldAlmostBe` newAngle
         context "move part from <90° to >90°" $ do
             let part = Part origin (pi/2) 0 1
-                targetPosition = Position (-1) 1
+                targetPosition = Vector2 (-1) 1
                 ([movedPart], _) = movePart part ([], targetPosition)
             it "updates position right" $ do
                 partPosition movedPart `shouldBe` targetPosition
@@ -169,7 +170,7 @@ spec = do
         let car = Part origin 0 undefined 1
         context "using exact circle algorithm for not too large circles" $ do
             let -- circle radius := 1
-                otherPoint = Position 0.5 (- sqrt 0.75)
+                otherPoint = Vector2 0.5 (- sqrt 0.75)
                 angleToPartPosition = pi/3 -- inner angles in triangle
                 angleOfTangent = angleToPartPosition + pi/2 -- draw it or believe
                 steerAngle = - (pi - angleOfTangent)
@@ -178,7 +179,7 @@ spec = do
             it "works for a horizontal car and a not too large turning circle" $ do
                 calculateSteerAngleToMatchPosition car otherPoint `shouldAlmostBeAngle` steerAngle
         context "using simple algorithm for large turning circles" $ do
-            let position = Position 10 0.01
+            let position = Vector2 10 0.01
             it "preconditions for simple algorithm are given" $ do
                 calculateDForCircumscrCircleCenter (partPosition car) (calculateCenterPosition car) position `shouldSatisfy` (<thresholdForCircleAlgorithm)
             it "calculates the simple steer angle correctly" $ do
@@ -186,9 +187,9 @@ spec = do
 
     describe "calculateCircumscribedCircleCenter" $ do
         let a = origin
-            b = Position (-1) 0
-            c = Position 0.5 (- sqrt 0.75)
-            expectedCenter = Position (-0.5) (- sqrt 0.75)
+            b = Vector2 (-1) 0
+            c = Vector2 0.5 (- sqrt 0.75)
+            expectedCenter = Vector2 (-0.5) (- sqrt 0.75)
         it "works for simple case" $ do
             calculateCircumscribedCircleCenter a b c `shouldAlmostBe` expectedCenter
         it "is independent of the argument order" $ do
@@ -199,9 +200,9 @@ spec = do
 
     describe "calculateDForCircumscrCircleCenter" $ do
         let a = origin
-            b = Position 1 (-1)
-            c = Position (-1) 1
-            pointOnLine m = Position (m*1) (m*(-1))
+            b = Vector2 1 (-1)
+            c = Vector2 (-1) 1
+            pointOnLine m = Vector2 (m*1) (m*(-1))
         it "equals 0 if points are on a line" $ do
             calculateDForCircumscrCircleCenter a b c `shouldAlmostBe` 0
         it "equals 0 for different a' on the line" $ property $

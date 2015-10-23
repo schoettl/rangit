@@ -1,13 +1,11 @@
 module Data.Vector.Extended
-    ( module Data.Vector.Class
-    , module Data.Vector.V2
-    , module Data.Vector.V3
+    ( module V
     , euclidianDistance
     ) where
 
-import Data.Vector.Class
-import Data.Vector.V2
-import Data.Vector.V3
+import Data.Vector.Class as V
+import Data.Vector.V2    as V
+import Data.Vector.V3    as V
 
 --instance Read Vector2 where
 --

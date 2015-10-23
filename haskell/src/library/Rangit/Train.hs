@@ -1,10 +1,14 @@
+{-# LANGUAGE StandaloneDeriving #-}
+
 module Rangit.Train where
 
 import Text.Read
-import Data.Vector.V2 (Vector2 (Vector2))
+import Data.Vector.Extended (Vector2 (Vector2), v2x, v2y)
+
+deriving instance Read Vector2
 
 -- | A position in the map.
-data Position = Position { xPos, yPos :: Double } deriving (Eq, Show, Read)
+type Position = Vector2
 
 -- | Part of a vehicle train. It has one axis.
 data Part = Part
@@ -19,7 +23,7 @@ type Train = [Part]
 -- Wheelbase :: Double -- Radabstand
 -- CenterDistance :: Double -- Achsabstand
 
-origin = Position 0 0
+origin = Vector2 0 0
 
 -- initial positioning --
 
@@ -62,7 +66,7 @@ calculatePositionOnPart :: Part -> Double -> Position
 calculatePositionOnPart part = calculatePositionByPointAngleLength (partPosition part) (partAngle part)
 
 calculatePositionByPointAngleLength :: Position -> Double -> Double -> Position
-calculatePositionByPointAngleLength (Position x y) a l = Position (x + l * cos a) (y + l * sin a)
+calculatePositionByPointAngleLength (Vector2 x y) a l = Vector2 (x + l * cos a) (y + l * sin a)
 
 -- | Reverse the train. The only reason to do this is to virtually drive the
 -- train backwards (backupai). This method does not place the power car in the
@@ -80,13 +84,13 @@ reverseTrain train =
 -- | Translate train to a given position. The train position becomes the new
 -- position and all other part positions are updated accordingly.
 translateTrainTo :: Train -> Position -> Train
-translateTrainTo train (Position x y) =
+translateTrainTo train (Vector2 x y) =
     let trainPos = trainPosition train
-        vector = (x - xPos trainPos, y - yPos trainPos)
+        vector = (x - v2x trainPos, y - v2y trainPos)
     in map (\ p -> p { partPosition = translatePosition (partPosition p) vector }) train
 
 translatePosition :: Position -> (Double, Double) -> Position
-translatePosition (Position x y) (dx, dy) = Position (x+dx) (y+dy)
+translatePosition (Vector2 x y) (dx, dy) = Vector2 (x+dx) (y+dy)
 
 positionToVector2 :: Position -> Vector2
-positionToVector2 (Position x y) = Vector2 x y
+positionToVector2 (Vector2 x y) = Vector2 x y

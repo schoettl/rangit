@@ -6,6 +6,7 @@ import Test.HUnit as HU
 import Rangit.Train
 import Rangit.Drive
 import Data.Angle
+import Data.Vector.Extended (Vector2 (Vector2))
 
 -- from: http://lambda.jstolarek.com/tag/quickcheck/
 
@@ -18,14 +19,14 @@ instance AlmostEq Double where
 instance AlmostEq Float where
     x =~ y = abs ( x - y ) < (1.0e-4 :: Float)
 
-instance AlmostEq Position where
-    Position x1 y1 =~ Position x2 y2 = x1 =~ x2 && y1 =~ y2
+instance AlmostEq Vector2 where
+    Vector2 x1 y1 =~ Vector2 x2 y2 = x1 =~ x2 && y1 =~ y2
 
 instance AlmostEq (Radians Float) where
     Radians x =~ Radians y = x =~ y
 
 instance AlmostEq Part where
-    Part (Position x y) a l r =~ Part (Position x' y') a' l' r' =
+    Part (Vector2 x y) a l r =~ Part (Vector2 x' y') a' l' r' =
         x =~ x' &&
         y =~ y' &&
         normalizeAngle a =~ normalizeAngle a' &&

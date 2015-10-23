@@ -5,6 +5,7 @@ import Test.QuickCheck
 import Test.Utils
 import Rangit.Train
 import Rangit.AI
+import Data.Vector.Extended (Vector2 (Vector2), euclidianDistance)
 
 spec :: Spec
 spec = do
@@ -15,7 +16,7 @@ spec = do
 
     describe "origin" $ do
         it "must be the origin (0, 0)" $ do
-            origin `shouldAlmostBe` Position 0 0
+            origin `shouldAlmostBe` Vector2 0 0
 
     describe "partLength" $ do
         it "must be sum of left and right length (hitch distance)" $ do
@@ -35,15 +36,15 @@ spec = do
             let testPart :: Double -> Part
                 testPart angle = Part origin angle 1 2
             it "works for a simple case" $ do
-                calculateLeftHitchPosition (testPart 0) `shouldAlmostBe` Position (-3) 0
+                calculateLeftHitchPosition (testPart 0) `shouldAlmostBe` Vector2 (-3) 0
             it "works for non-origin positioned part" $ do
-                calculateLeftHitchPosition (Part (Position (-1) 1) 0 1 2) `shouldAlmostBe` Position (-4) 1
+                calculateLeftHitchPosition (Part (Vector2 (-1) 1) 0 1 2) `shouldAlmostBe` Vector2 (-4) 1
             it "works with a positive angle" $ do
-                calculateLeftHitchPosition (testPart (pi/4)) `shouldAlmostBe` Position (-3/sqrt2) (-3/sqrt2)
+                calculateLeftHitchPosition (testPart (pi/4)) `shouldAlmostBe` Vector2 (-3/sqrt2) (-3/sqrt2)
             it "works with a positive angle greater 90 degree" $ do
-                calculateLeftHitchPosition (testPart (3/4*pi)) `shouldAlmostBe` Position (3/sqrt2) (-3/sqrt2)
+                calculateLeftHitchPosition (testPart (3/4*pi)) `shouldAlmostBe` Vector2 (3/sqrt2) (-3/sqrt2)
             it "works with a negative angle" $ do
-                calculateLeftHitchPosition (testPart (-pi/4)) `shouldAlmostBe` Position (-3/sqrt2) (3/sqrt2)
+                calculateLeftHitchPosition (testPart (-pi/4)) `shouldAlmostBe` Vector2 (-3/sqrt2) (3/sqrt2)
             it "works for many different angles" $ property $
                 \ x -> let p = testPart x
                            d = euclidianDistance (calculateLeftHitchPosition p) (partPosition p)
@@ -52,20 +53,20 @@ spec = do
             let testPartWithNegativeRightLength :: Double -> Part
                 testPartWithNegativeRightLength angle = Part origin angle 5 (-2)
             it "works for a simple case" $ do
-                calculateLeftHitchPosition (testPartWithNegativeRightLength 0) `shouldAlmostBe` Position (-3) 0
+                calculateLeftHitchPosition (testPartWithNegativeRightLength 0) `shouldAlmostBe` Vector2 (-3) 0
             it "works with a positive angle" $ do
-                calculateLeftHitchPosition (testPartWithNegativeRightLength (pi/4)) `shouldAlmostBe` Position (-3/sqrt2) (-3/sqrt2)
+                calculateLeftHitchPosition (testPartWithNegativeRightLength (pi/4)) `shouldAlmostBe` Vector2 (-3/sqrt2) (-3/sqrt2)
             it "works with a positive angle greater 90 degree" $ do
-                calculateLeftHitchPosition (testPartWithNegativeRightLength (3/4*pi)) `shouldAlmostBe` Position (3/sqrt2) (-3/sqrt2)
+                calculateLeftHitchPosition (testPartWithNegativeRightLength (3/4*pi)) `shouldAlmostBe` Vector2 (3/sqrt2) (-3/sqrt2)
             it "works with a negative angle" $ do
-                calculateLeftHitchPosition (testPartWithNegativeRightLength (-pi/4)) `shouldAlmostBe` Position (-3/sqrt2) (3/sqrt2)
+                calculateLeftHitchPosition (testPartWithNegativeRightLength (-pi/4)) `shouldAlmostBe` Vector2 (-3/sqrt2) (3/sqrt2)
         context "lengths are 0" $ do
             it "works when left length is 0" $ do
-                calculateLeftHitchPosition (Part origin 0 0 1) `shouldBe` Position (-1) 0
+                calculateLeftHitchPosition (Part origin 0 0 1) `shouldBe` Vector2 (-1) 0
             it "works when right length is 0" $ do
-                calculateLeftHitchPosition (Part origin 0 1 0) `shouldBe` Position (-1) 0
+                calculateLeftHitchPosition (Part origin 0 1 0) `shouldBe` Vector2 (-1) 0
             it "works when both lengths are 0" $ do
-                calculateLeftHitchPosition (Part origin 0 0 0) `shouldBe` Position 0 0
+                calculateLeftHitchPosition (Part origin 0 0 0) `shouldBe` Vector2 0 0
 
     describe "calculateCenterPosition" $ do
         let sqrt2 = sqrt 2
@@ -73,26 +74,26 @@ spec = do
             let testPart :: Double -> Part
                 testPart angle = Part origin angle undefined 3
             it "works for a simple case" $ do
-                calculateCenterPosition (testPart 0) `shouldBe` Position (-3) 0
+                calculateCenterPosition (testPart 0) `shouldBe` Vector2 (-3) 0
             it "works for non-origin positioned part" $ do
-                calculateCenterPosition (Part (Position (-1) 1) 0 undefined 3) `shouldBe` Position (-4) 1
+                calculateCenterPosition (Part (Vector2 (-1) 1) 0 undefined 3) `shouldBe` Vector2 (-4) 1
             it "works with a positive angle" $ do
-                calculateCenterPosition (testPart (pi/4)) `shouldAlmostBe` Position (-3/sqrt2) (-3/sqrt2)
+                calculateCenterPosition (testPart (pi/4)) `shouldAlmostBe` Vector2 (-3/sqrt2) (-3/sqrt2)
             it "works with a positive angle greater 90 degree" $ do
-                calculateCenterPosition (testPart (3/4*pi)) `shouldAlmostBe` Position (3/sqrt2) (-3/sqrt2)
+                calculateCenterPosition (testPart (3/4*pi)) `shouldAlmostBe` Vector2 (3/sqrt2) (-3/sqrt2)
             it "works with a negative angle" $ do
-                calculateCenterPosition (testPart (-pi/4)) `shouldAlmostBe` Position (-3/sqrt2) (3/sqrt2)
+                calculateCenterPosition (testPart (-pi/4)) `shouldAlmostBe` Vector2 (-3/sqrt2) (3/sqrt2)
         context "negative right length" $ do
             let testPartWithNegativeRightLength :: Double -> Part
                 testPartWithNegativeRightLength angle = Part origin angle undefined (-3)
             it "works for a simple case" $ do
-                calculateCenterPosition (testPartWithNegativeRightLength 0) `shouldBe` Position 3 0
+                calculateCenterPosition (testPartWithNegativeRightLength 0) `shouldBe` Vector2 3 0
             it "works with a positive angle" $ do
-                calculateCenterPosition (testPartWithNegativeRightLength (pi/4)) `shouldAlmostBe` Position (3/sqrt2) (3/sqrt2)
+                calculateCenterPosition (testPartWithNegativeRightLength (pi/4)) `shouldAlmostBe` Vector2 (3/sqrt2) (3/sqrt2)
             it "works with a positive angle greater 90 degree" $ do
-                calculateCenterPosition (testPartWithNegativeRightLength (3/4*pi)) `shouldAlmostBe` Position (-3/sqrt2) (3/sqrt2)
+                calculateCenterPosition (testPartWithNegativeRightLength (3/4*pi)) `shouldAlmostBe` Vector2 (-3/sqrt2) (3/sqrt2)
             it "works with a negative angle" $ do
-                calculateCenterPosition (testPartWithNegativeRightLength (-pi/4)) `shouldAlmostBe` Position (3/sqrt2) (-3/sqrt2)
+                calculateCenterPosition (testPartWithNegativeRightLength (-pi/4)) `shouldAlmostBe` Vector2 (3/sqrt2) (-3/sqrt2)
 
     describe "fixInitialPositions" $ do
         let powerCar = Part origin ( pi/4) 1 1
@@ -102,8 +103,8 @@ spec = do
         it "works on a train with just one part" $ do
             fixInitialPositions [powerCar] `shouldBe` [powerCar]
         it "works on a train with three parts" $ do
-            partPosition t1 `shouldAlmostBe` Position ((-2)/sqrt 2) ((-2)/sqrt 2)
-            partPosition t2 `shouldAlmostBe` Position (-sqrt 8) 0
+            partPosition t1 `shouldAlmostBe` Vector2 ((-2)/sqrt 2) ((-2)/sqrt 2)
+            partPosition t2 `shouldAlmostBe` Vector2 (-sqrt 8) 0
         it "does not change the right-most part" $ do
             pc `shouldBe` powerCar
         it "does not change any properties except the position" $ do
@@ -111,9 +112,9 @@ spec = do
             t2 `shouldBe` trailer2 { partPosition = partPosition t2 }
 
     describe "reverseTrain" $ do
-        let pc = Part (Position 0 1)  0   1 2
-            t1 = Part (Position 2 3)  pi  3 4
-            t2 = Part (Position 4 5)  0   5 6
+        let pc = Part (Vector2 0 1)  0   1 2
+            t1 = Part (Vector2 2 3)  pi  3 4
+            t2 = Part (Vector2 4 5)  0   5 6
             train = [t2, t1, pc]
             reversedTrain = reverseTrain train
         it "part positions become left hitch positions" $ do
@@ -128,10 +129,10 @@ spec = do
             reverseTrain (reverseTrain train) `shouldAlmostBe` train
 
     describe "translateTrainTo" $ do
-        let pc = Part (Position (-1) (-4)) 1 2 3
-            tr = Part (Position (-2) (-3)) 2 3 4
+        let pc = Part (Vector2 (-1) (-4)) 1 2 3
+            tr = Part (Vector2 (-2) (-3)) 2 3 4
             train = [tr, pc]
-            target = Position (-3) (-2)
-            newTrPos = Position (-2-3+1) (-3-2+4)
+            target = Vector2 (-3) (-2)
+            newTrPos = Vector2 (-2-3+1) (-3-2+4)
         it "translate part positions correctly" $ do
             translateTrainTo train target `shouldBe` [tr { partPosition = newTrPos }, pc { partPosition = target }]
