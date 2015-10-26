@@ -1,3 +1,5 @@
+{-# LANGUAGE CPP #-}
+
 module Rangit.Drive
     ( DriveCommand (..)
     , stepLength
@@ -6,6 +8,10 @@ module Rangit.Drive
     , calculateSteerAngleToMatchPosition
     , calculateAngleBetweenPoints
     , moveTrainToPosition
+#ifdef TEST
+    , normalizeAngle
+    , modReal
+#endif
     ) where
 
 import Rangit.Train

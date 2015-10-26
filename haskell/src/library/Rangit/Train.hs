@@ -1,4 +1,5 @@
 {-# LANGUAGE StandaloneDeriving #-}
+{-# LANGUAGE CPP #-}
 
 module Rangit.Train
     ( Position
@@ -13,6 +14,9 @@ module Rangit.Train
     , translateTrainTo
     , calculatePositionByPointAngleLength
     , reverseTrain
+#ifdef TEST
+    , 
+#endif
     ) where
 
 import Text.Read

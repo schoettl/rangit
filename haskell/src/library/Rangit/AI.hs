@@ -1,6 +1,11 @@
+{-# LANGUAGE CPP #-}
+
 module Rangit.AI
     ( DiscretePath
     , backupTrainAccumulateDriveCommands
+#ifdef TEST
+    , 
+#endif
     ) where
 
 import Rangit.Train
