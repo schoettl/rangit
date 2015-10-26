@@ -1,6 +1,19 @@
 {-# LANGUAGE StandaloneDeriving #-}
 
-module Rangit.Train where
+module Rangit.Train
+    ( Position
+    , Part (..)
+    , Train
+    , origin
+    , fixInitialPositions
+    , partLength
+    , trainLength
+    , calculateCenterPosition
+    , calculateLeftHitchPosition
+    , translateTrainTo
+    , calculatePositionByPointAngleLength
+    , reverseTrain
+    ) where
 
 import Text.Read
 import Data.Vector.Extended (Vector2 (Vector2), v2x, v2y)
@@ -89,8 +102,5 @@ translateTrainTo train (Vector2 x y) =
         vector = (x - v2x trainPos, y - v2y trainPos)
     in map (\ p -> p { partPosition = translatePosition (partPosition p) vector }) train
 
-translatePosition :: Position -> (Double, Double) -> Position
+translatePosition :: Position -> (Double, Double) -> Position -- TODO fix
 translatePosition (Vector2 x y) (dx, dy) = Vector2 (x+dx) (y+dy)
-
-positionToVector2 :: Position -> Vector2
-positionToVector2 (Vector2 x y) = Vector2 x y

@@ -1,4 +1,7 @@
-module Rangit.AI where
+module Rangit.AI
+    ( DiscretePath
+    , backupTrainAccumulateDriveCommands
+    ) where
 
 import Rangit.Train
 import Rangit.Drive
@@ -59,11 +62,10 @@ calculateAngleInPath _ _ = error "path must have at least two points"
 removeOverrunnedPoints :: Train -> DiscretePath -> DiscretePath
 removeOverrunnedPoints (lastPart:_) = dropWhile badWaypoint
     where
-        badWaypoint point =
+        badWaypoint x =
             let a = partAngle lastPart
                 n = Vector2 (cos a) (sin a)
-                x = positionToVector2 point
-                p = positionToVector2 $ calculateRearAxisPosition lastPart
+                p = calculateRearAxisPosition lastPart
              in n `vdot` (x - p) > 0
 
         calculateRearAxisPosition :: Part -> Position
