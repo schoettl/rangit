@@ -13,6 +13,9 @@ import qualified Data.ByteString.Lazy.Char8 as BSL
 instance ToJSON Vector2 where
     toJSON (Vector2 x y) = object [ "x" .= x , "y" .= y ]
 
+instance FromJSON Vector2 where
+    parseJSON = undefined
+
 instance ToJSON Part where
     toJSON (Part position angle leftLength rightLength) =
         object [ "position"    .= position
@@ -20,6 +23,9 @@ instance ToJSON Part where
                , "leftLength"  .= leftLength
                , "rightLength" .= rightLength
                ]
+
+instance FromJSON Part where
+    parseJSON = undefined
 
 encodeTrainAsJson :: Train -> String
 encodeTrainAsJson = BSL.unpack . encode . toJSON
