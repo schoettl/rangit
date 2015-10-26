@@ -41,6 +41,10 @@ fixInitialPositions ps = foldr correctPosition [last ps] (init ps)
             let new = calculatePosition part fix
             in new:result
 
+-- | Validate train.
+-- 1. Train must have at least one part.
+-- 2. Only power car can have it's right hitch behind the axis.
+-- 3. No part can have it's right hitch left of it's left hitch.
 validateTrain :: Train -> Bool
 validateTrain [] = False
 validateTrain tr = and (fmap (\p -> partLengthRight p >= 0) (init tr))
