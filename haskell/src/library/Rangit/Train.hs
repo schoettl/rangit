@@ -78,8 +78,13 @@ calculateCenterPosition part = calculatePositionOnPart part $ -partLengthRight p
 calculatePositionOnPart :: Part -> Double -> Position
 calculatePositionOnPart part = calculatePositionByPointAngleLength (partPosition part) (partAngle part)
 
-calculatePositionByPointAngleLength :: Position -> Double -> Double -> Position
-calculatePositionByPointAngleLength (Vector2 x y) a l = Vector2 (x + l * cos a) (y + l * sin a)
+-- | Calculate position given another position, an angle and a length.
+calculatePositionByPointAngleLength
+    :: Position -- ^ Given position
+    -> Double   -- ^ Angle specifying direction of a line from given to resulting position
+    -> Double   -- ^ Length specifying length of a line from given to resulting position
+    -> Position -- ^ Resulting position
+calculatePositionByPointAngleLength p a l = p + Vector2 (l * cos a) (l * sin a)
 
 -- | Reverse the train. The only reason to do this is to virtually drive the
 -- train backwards (backupai). This method does not place the power car in the
