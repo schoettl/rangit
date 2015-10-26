@@ -18,6 +18,30 @@ spec = do
         it "must be the origin (0, 0)" $ do
             origin `shouldAlmostBe` Vector2 0 0
 
+    describe "validateTrain" $ do
+        let stdPowerCar = Part undefined undefined 0 1
+            stdTrailer  = Part undefined undefined 1 3
+        it "fails on an empty train" $ do
+            validateTrain [] `shouldBe` False
+        it "allows power car with right length < 0" $ do
+            validateTrain [Part undefined undefined 1 (-1)] `shouldBe` True
+        it "allows a standard train" $ do
+            validateTrain [stdTrailer, stdPowerCar] `shouldBe` True
+        it "fails for trailer with right hitch behind axis" $ do
+            validateTrain [Part undefined undefined 2 (-1), stdPowerCar] `shouldBe` False
+        it "fails for trailer with left hitch in front of right hitch" $ do
+            validateTrain [Part undefined undefined (-2) 1, stdPowerCar] `shouldBe` False
+        it "fails for trailer with right hitch behind left hitch" $ do
+            validateTrain [Part undefined undefined 1 (-2), stdPowerCar] `shouldBe` False
+        it "allows left hitch == right hitch for trailer (right length >= 0)" $ property $
+            \ l -> l < 0 || validateTrain [Part undefined undefined (-l) l, stdPowerCar] == True
+        it "fails for power car with left hitch in front of right hitch" $ do
+            validateTrain [stdTrailer, Part undefined undefined (-2) 1] `shouldBe` False
+        it "fails for power car with right hitch behind left hitch" $ do
+            validateTrain [stdTrailer, Part undefined undefined 1 (-2)] `shouldBe` False
+        it "allows left hitch == right hitch for power car" $ property $
+            \ l -> validateTrain [stdTrailer, Part undefined undefined (-l) l] == True
+
     describe "partLength" $ do
         it "must be sum of left and right length (hitch distance)" $ do
             partLength (Part undefined undefined 3 2) `shouldBe` 5
