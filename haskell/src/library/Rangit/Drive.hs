@@ -1,4 +1,23 @@
-module Rangit.Drive where
+{-# LANGUAGE CPP #-}
+
+module Rangit.Drive
+    ( DriveCommand (..)
+    , stepLength
+    , drive
+    , driveAccumulateTrains
+    , calculateSteerAngleToMatchPosition
+    , calculateAngleBetweenPoints
+    , moveTrainToPosition
+#ifndef TEST
+    , normalizeAngle
+    , modReal
+    , calculateDForCircumscrCircleCenter
+    , calculateAngleByArcTan
+    , movePart
+    , thresholdForCircleAlgorithm
+    , calculateCircumscribedCircleCenter
+#endif
+    ) where
 
 import Rangit.Train
 import Data.Vector.Extended (Vector2 (Vector2), v2x, v2y)
@@ -171,7 +190,7 @@ fixSteerAngle = fix . normalizeAngle
 
 -- | Normalize angle so that it is between 0 (inclusive) and 2 pi (exclusive).
 normalizeAngle :: Double -> Double
-normalizeAngle = (`modReal` (2*pi))
+normalizeAngle x = x `modReal` (2*pi)
 
 -- | Modulo operation for instances of Real type class.
 modReal :: Real a => a -> a -> a

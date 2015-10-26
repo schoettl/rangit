@@ -1,6 +1,20 @@
 {-# LANGUAGE StandaloneDeriving #-}
+{-# LANGUAGE CPP #-}
 
-module Rangit.Train where
+module Rangit.Train
+    ( Position
+    , Part (..)
+    , Train
+    , origin
+    , fixInitialPositions
+    , partLength
+    , trainLength
+    , calculateCenterPosition
+    , calculateLeftHitchPosition
+    , translateTrainTo
+    , calculatePositionByPointAngleLength
+    , reverseTrain
+    ) where
 
 import Text.Read
 import Data.Vector.Extended (Vector2 (Vector2), v2x, v2y)
@@ -65,8 +79,13 @@ calculateCenterPosition part = calculatePositionOnPart part $ -partLengthRight p
 calculatePositionOnPart :: Part -> Double -> Position
 calculatePositionOnPart part = calculatePositionByPointAngleLength (partPosition part) (partAngle part)
 
-calculatePositionByPointAngleLength :: Position -> Double -> Double -> Position
-calculatePositionByPointAngleLength (Vector2 x y) a l = Vector2 (x + l * cos a) (y + l * sin a)
+-- | Calculate position given another position, an angle and a length.
+calculatePositionByPointAngleLength
+    :: Position -- ^ Given position
+    -> Double   -- ^ Angle specifying direction of a line from given to resulting position
+    -> Double   -- ^ Length specifying length of a line from given to resulting position
+    -> Position -- ^ Resulting position
+calculatePositionByPointAngleLength p a l = p + Vector2 (l * cos a) (l * sin a)
 
 -- | Reverse the train. The only reason to do this is to virtually drive the
 -- train backwards (backupai). This method does not place the power car in the
@@ -84,13 +103,6 @@ reverseTrain train =
 -- | Translate train to a given position. The train position becomes the new
 -- position and all other part positions are updated accordingly.
 translateTrainTo :: Train -> Position -> Train
-translateTrainTo train (Vector2 x y) =
-    let trainPos = trainPosition train
-        vector = (x - v2x trainPos, y - v2y trainPos)
-    in map (\ p -> p { partPosition = translatePosition (partPosition p) vector }) train
-
-translatePosition :: Position -> (Double, Double) -> Position
-translatePosition (Vector2 x y) (dx, dy) = Vector2 (x+dx) (y+dy)
-
-positionToVector2 :: Position -> Vector2
-positionToVector2 (Vector2 x y) = Vector2 x y
+translateTrainTo train targetPosition =
+    let vector = targetPosition - trainPosition train
+     in map (\ p -> p { partPosition = partPosition p + vector }) train

@@ -1,7 +1,13 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE FlexibleInstances #-}
 
-module Rangit.IO where
+module Rangit.IO
+    ( encodeTrainAsJson
+    , loadTrainFromFile
+    , loadTrain
+    , loadPathFromFile
+    , loadPath
+    ) where
 
 import Rangit.Train
 import Rangit.AI
