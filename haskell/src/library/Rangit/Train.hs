@@ -41,6 +41,11 @@ fixInitialPositions ps = foldr correctPosition [last ps] (init ps)
             let new = calculatePosition part fix
             in new:result
 
+validateTrain :: Train -> Bool
+validateTrain [] = False
+validateTrain tr = and (fmap (\p -> partLengthRight p >= 0) (init tr))
+                && and (fmap (\p -> partLengthRight p >= - partLengthLeft p) tr)
+
 -- | Calculate position of a part based on the angle, and the position of the car to the right.
 calculatePosition :: Part -- ^ Part for which position shall be calculated
                   -> Part -- ^ Part right of with fixed position
