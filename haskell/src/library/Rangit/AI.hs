@@ -2,7 +2,6 @@ module Rangit.AI where
 
 import Rangit.Train
 import Rangit.Drive
--- import Data.Vector from package AC-Vector does not work because cabal favours package vector
 import Data.Vector.Extended (Vector2 (Vector2), vdot, euclidianDistance)
 
 type DiscretePath = [Position]
