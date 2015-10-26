@@ -97,10 +97,6 @@ reverseTrain train =
 -- | Translate train to a given position. The train position becomes the new
 -- position and all other part positions are updated accordingly.
 translateTrainTo :: Train -> Position -> Train
-translateTrainTo train (Vector2 x y) =
-    let trainPos = trainPosition train
-        vector = (x - v2x trainPos, y - v2y trainPos)
-    in map (\ p -> p { partPosition = translatePosition (partPosition p) vector }) train
-
-translatePosition :: Position -> (Double, Double) -> Position -- TODO fix
-translatePosition (Vector2 x y) (dx, dy) = Vector2 (x+dx) (y+dy)
+translateTrainTo train targetPosition =
+    let vector = targetPosition - trainPosition train
+     in map (\ p -> p { partPosition = partPosition p + vector }) train
