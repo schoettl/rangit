@@ -14,9 +14,6 @@ module Rangit.Train
     , translateTrainTo
     , calculatePositionByPointAngleLength
     , reverseTrain
-#ifdef TEST
-    , 
-#endif
     ) where
 
 import Text.Read

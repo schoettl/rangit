@@ -3,8 +3,8 @@
 module Rangit.AI
     ( DiscretePath
     , backupTrainAccumulateDriveCommands
-#ifdef TEST
-    , 
+#ifndef TEST
+    , calculateAngleInPath
 #endif
     ) where
 

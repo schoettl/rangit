@@ -8,9 +8,14 @@ module Rangit.Drive
     , calculateSteerAngleToMatchPosition
     , calculateAngleBetweenPoints
     , moveTrainToPosition
-#ifdef TEST
+#ifndef TEST
     , normalizeAngle
     , modReal
+    , calculateDForCircumscrCircleCenter
+    , calculateAngleByArcTan
+    , movePart
+    , thresholdForCircleAlgorithm
+    , calculateCircumscribedCircleCenter
 #endif
     ) where
 
