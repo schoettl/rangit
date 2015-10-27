@@ -145,6 +145,18 @@ spec = do
             it "updates angle right" $ do
                 partAngle movedPart `shouldSatisfy` (>pi/2)
                 partAngle movedPart `shouldSatisfy` (<pi)
+        context "move two parts" $ do
+            let pc = Part origin 0 0 1
+                tr = Part (Vector2 (-1) 0) 0 0 1
+                target1 = Vector2 1 0 -- targets for pc
+                pc' = pc { partPosition = target1 }
+                target2 = calculateLeftHitchPosition pc' -- target for tr
+                tr' = tr { partPosition = target2 }
+                target3 = calculateLeftHitchPosition tr' -- target for further parts
+            it "moves first part" $ do
+                movePart pc ([], target1) `shouldBe` ([pc'], target2)
+            it "moves second part" $ do
+                movePart tr ([pc'], target2) `shouldBe` ([tr', pc'], target3)
 
     describe "calculateAngleByArcTan" $ do
         --it "works for an angle less than 45°" $ do
