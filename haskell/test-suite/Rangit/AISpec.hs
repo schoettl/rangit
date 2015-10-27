@@ -52,16 +52,10 @@ spec = do
                 it "works for distance 3" $ do
                     calculateAngleInPath path 3    `shouldBe` (pi/2)
 
-    describe "backupTrainToFitPath" $ do
-        let path = [origin, Vector2 (-1) 0]
-            pc = Part origin 0 1 1
-        return ()
-
-    let secondFromEnd = last . init
-        path = [origin, Vector2 (-1) 0, Vector2 (-2) (-1)]
-        train = fixInitialPositions [Part origin 0 0 1, Part (Vector2 2 0) 0 1 1]
-
     describe "backupTrainAccumulateDriveCommands" $ do
-        let result = backupTrainAccumulateDriveCommands path train
-        it "should return as many drive commands as there are points in path" $ do
+        let train = fixInitialPositions [Part origin pi 0 1, Part origin pi 1 1]
+            path = [Vector2 5 0, Vector2 6 0, Vector2 7 (-1)]
+            result = backupTrainAccumulateDriveCommands path train
+        it "should return as many drive commands as there are points in path,\
+           \as long as no waypoints are overrunned" $ do
             length result `shouldBe` length path
