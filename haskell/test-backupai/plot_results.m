@@ -72,3 +72,9 @@ for i = 1:drawEveryNthTrain:rows(resultData)
     "marker" , '*', # bug in doc: marker instead of markerstyle
     "color", 'y')
 endfor
+
+# Save plot
+splittedFilename = strsplit(resultFile, ".");
+splittedFilename(length(splittedFilename)) = "jpg";
+plotFile = strjoin(splittedFilename, ".");
+#print(plotFile);
