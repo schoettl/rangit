@@ -57,9 +57,9 @@ calculateAngleInPath
     -> Double       -- ^ Angle in path at the given distance from starting point
 calculateAngleInPath path@(a:b:_) distance = f path (euclidianDistance a b)
     where
-        f [a, b] _ = calculateAngleBetweenPoints a b
+        f [a, b] _ = calculateAngleOfLine a b
         f (a:b:c:rest) distToB = if distance < distToB
-            then calculateAngleBetweenPoints a b
+            then calculateAngleOfLine a b
             else f (b:c:rest) (distToB + euclidianDistance b c)
 calculateAngleInPath _ _ = error "path must have at least two points"
 

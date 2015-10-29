@@ -195,7 +195,7 @@ spec = do
             it "preconditions for simple algorithm are given" $ do
                 abs (calculateDForCircumscrCircleCenter (partPosition car) (calculateCenterPosition car) position) `shouldSatisfy` (<thresholdForCircleAlgorithm)
             it "calculates the simple steer angle correctly" $ do
-                calculateSteerAngleToMatchPosition car position `shouldAlmostBe` calculateAngleBetweenPoints origin position
+                calculateSteerAngleToMatchPosition car position `shouldAlmostBe` calculateAngleOfLine origin position
 
     describe "calculateCircumscribedCircleCenter" $ do
         let a = origin

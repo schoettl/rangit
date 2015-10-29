@@ -25,7 +25,7 @@ positionTrain path = (\t -> drive t (trainLength t) 0) . fixInitialPositions . a
 
 alignTrainAngleToFirstPathSegment :: DiscretePath -> Train -> Train
 alignTrainAngleToFirstPathSegment (a:b:_) =
-    let angle = calculateAngleBetweenPoints b a
+    let angle = calculateAngleOfLine b a
     in map (\ p -> p { partAngle = angle })
 
 setTrainPositionToFirstPathPoint :: DiscretePath -> Train -> Train

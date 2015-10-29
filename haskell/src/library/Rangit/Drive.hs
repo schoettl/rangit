@@ -6,7 +6,7 @@ module Rangit.Drive
     , drive
     , driveAccumulateTrains
     , calculateSteerAngleToMatchPosition
-    , calculateAngleBetweenPoints
+    , calculateAngleOfLine
     , moveTrainToPosition
 #ifndef TEST
     , normalizeAngle
@@ -105,7 +105,7 @@ movePart :: Part              -- ^ Current part to be moved
          -> (Train, Position) -- ^ Moved parts including current one and new target position i. e. position of current part's left hitch
 movePart part (ps, target) =
     let center = calculateCenterPosition part
-        absAngle = calculateAngleBetweenPoints center target
+        absAngle = calculateAngleOfLine center target
         newPart = part { partPosition = target, partAngle = absAngle }
         leftHitch = calculateLeftHitchPosition newPart
     in (newPart : ps, leftHitch)
@@ -125,11 +125,11 @@ calculateAngleByArcTan = flip atan2
 --calculateMissingAngleAlpha beta a b = arcsine $ a * sine beta / b
 
 -- | Calculate angle of line between two points.
-calculateAngleBetweenPoints -- TODO fix name!
+calculateAngleOfLine
     :: Position -- ^ Start point of line
     -> Position -- ^ End point of line
     -> Double   -- ^ Angle of line between points
-calculateAngleBetweenPoints (Vector2 x1 y1) (Vector2 x2 y2) = calculateAngleByArcTan (x2 - x1) (y2 - y1)
+calculateAngleOfLine (Vector2 x1 y1) (Vector2 x2 y2) = calculateAngleByArcTan (x2 - x1) (y2 - y1)
 
 -- | Calculate steer angle to reach the target position.
 calculateSteerAngleToMatchPosition
@@ -141,7 +141,7 @@ calculateSteerAngleToMatchPosition part position =
         b = calculateCenterPosition part
         c = position
         steerAngle = if abs (calculateDForCircumscrCircleCenter a b c) < thresholdForCircleAlgorithm
-            then calculateAngleBetweenPoints a c - partAngle part
+            then calculateAngleOfLine a c - partAngle part
             else calculateSteerAngleFromCircle part position
      in fixSteerAngle steerAngle
 
@@ -152,7 +152,7 @@ calculateSteerAngleFromCircle part position =
         c = position
         center = calculateCircumscribedCircleCenter a b c
         -- Calculate steer angle from tangent of circle
-        angleToPartPosition = calculateAngleBetweenPoints center a
+        angleToPartPosition = calculateAngleOfLine center a
         angleOfTangent = angleToPartPosition + pi/2
      in angleOfTangent - partAngle part
 
