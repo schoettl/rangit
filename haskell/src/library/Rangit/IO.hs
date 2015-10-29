@@ -20,7 +20,9 @@ instance ToJSON Vector2 where
     toJSON (Vector2 x y) = object [ "x" .= x , "y" .= y ]
 
 instance FromJSON Vector2 where
-    parseJSON = undefined
+    parseJSON (Object v) = Vector2
+        <$> (v .: "x")
+        <*> (v .: "y")
 
 instance ToJSON Part where
     toJSON (Part position angle leftLength rightLength) =
@@ -31,7 +33,12 @@ instance ToJSON Part where
                ]
 
 instance FromJSON Part where
-    parseJSON = undefined
+    parseJSON (Object p) = Part
+        <$> (p .: "position")
+        <*> (p .: "angle")
+        <*> (p .: "leftLength")
+        <*> (p .: "rightLength")
+
 
 encodeTrainAsJson :: Train -> String
 encodeTrainAsJson = BSL.unpack . encode . toJSON
