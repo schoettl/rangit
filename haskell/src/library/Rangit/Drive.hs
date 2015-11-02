@@ -11,15 +11,13 @@ module Rangit.Drive
 #ifndef TEST
     , normalizeAngle
     , modReal
-    , calculateDForCircumscrCircleCenter
-    , calculateAngleByArcTan
     , movePart
     , thresholdForCircleAlgorithm
-    , calculateCircumscribedCircleCenter
 #endif
     ) where
 
 import Rangit.Train
+import Rangit.Trigonometry
 import Data.Vector.Extended (Vector2 (Vector2), v2x, v2y)
 
 data DriveCommand = DriveCommand Double Double
@@ -27,7 +25,7 @@ data DriveCommand = DriveCommand Double Double
 -- | Length to drive in one calculation step.
 stepLength = 0.01
 
--- | The result of calculateDForCircumscrCircleCenter must be greater than this
+-- | The result of calculateDForCircumscribedCircleCenter must be greater than this
 -- threshold to apply the turning circle algorithm/formulas.
 thresholdForCircleAlgorithm = 0.01
 
@@ -110,27 +108,6 @@ movePart part (ps, target) =
         leftHitch = calculateLeftHitchPosition newPart
     in (newPart : ps, leftHitch)
 
--- | Calculate an angle using arctan given dx and dy.
-calculateAngleByArcTan :: Double -- ^ Delta x
-                       -> Double -- ^ Delta y
-                       -> Double -- ^ Angle between horizontal line and line defined by dx and dy (counter-clockwise)
-calculateAngleByArcTan = flip atan2
-
--- | Calculate missing triangle side (Law of cosines)
---calculateMissingTriangleSideA :: Radians Double -> Double -> Double -> Double
---calculateMissingTriangleSideA alpha b c = sqrt $ b^2 + c^2 + 2*b*c*cosine alpha
-
--- | Calculate missing angle in triangle (Law of sines)
---calculateMissingAngleAlpha :: Radians Double -> Double -> Double -> Radians Double
---calculateMissingAngleAlpha beta a b = arcsine $ a * sine beta / b
-
--- | Calculate angle of line between two points.
-calculateAngleOfLine
-    :: Position -- ^ Start point of line
-    -> Position -- ^ End point of line
-    -> Double   -- ^ Angle of line between points
-calculateAngleOfLine (Vector2 x1 y1) (Vector2 x2 y2) = calculateAngleByArcTan (x2 - x1) (y2 - y1)
-
 -- | Calculate steer angle to reach the target position.
 calculateSteerAngleToMatchPosition
     :: Part     -- ^ Part (part position and part axis center are on the circle)
@@ -140,7 +117,7 @@ calculateSteerAngleToMatchPosition part position =
     let a = partPosition part
         b = calculateCenterPosition part
         c = position
-        steerAngle = if abs (calculateDForCircumscrCircleCenter a b c) < thresholdForCircleAlgorithm
+        steerAngle = if abs (calculateDForCircumscribedCircleCenter a b c) < thresholdForCircleAlgorithm
             then calculateAngleOfLine a c - partAngle part
             else calculateSteerAngleFromCircle part position
      in fixSteerAngle steerAngle
@@ -155,30 +132,6 @@ calculateSteerAngleFromCircle part position =
         angleToPartPosition = calculateAngleOfLine center a
         angleOfTangent = angleToPartPosition + pi/2
      in angleOfTangent - partAngle part
-
--- | Calculate center of circumscribed circle.
--- https://en.wikipedia.org/wiki/Circumscribed_circle#Cartesian_coordinates_2
-calculateCircumscribedCircleCenter :: Position -> Position -> Position -> Position
-calculateCircumscribedCircleCenter a b c =
-    let d = calculateDForCircumscrCircleCenter a b c
-     in Vector2
-        (((x a ^2 + y a ^2) * (y b - y c)
-                 + (x b ^2 + y b ^2) * (y c - y a)
-                 + (x c ^2 + y c ^2) * (y a - y b)) / d)
-        (((x a ^2 + y a ^2) * (x c - x b)
-                 + (x b ^2 + y b ^2) * (x a - x c)
-                 + (x c ^2 + y c ^2) * (x b - x a)) / d)
-    where
-        x = v2x
-        y = v2y
-
--- | Calculate a helper value d that is used by the function calculateCircumscribedCircleCenter.
--- A property of this function is that it returns 0 if all three points lie on a line.
-calculateDForCircumscrCircleCenter :: Position -> Position -> Position -> Double
-calculateDForCircumscrCircleCenter a b c = 2 * (x a * (y b - y c) + x b * (y c - y a) + x c * (y a - y b))
-    where
-        x = v2x
-        y = v2y
 
 -- | Fix steer angle if it is outside of the range [-90°, 90°].
 -- See function body for details.
