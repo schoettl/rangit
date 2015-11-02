@@ -8,6 +8,7 @@ module Rangit.Train
     , origin
     , fixInitialPositions
     , partLength
+    , partHitchDistance
     , trainLength
     , calculateCenterPosition
     , calculateLeftHitchPosition
@@ -65,23 +66,31 @@ validateTrain [] = False
 validateTrain tr = and (fmap (\p -> partLengthRight p >= 0) (init tr))
                 && and (fmap (\p -> partLengthRight p >= - partLengthLeft p) tr)
 
--- | Calculate position of a part based on the angle, and the position of the car to the right.
+-- | Calculate position of a part based on it's angle, and angle and position of the car to the right.
 calculatePosition :: Part -- ^ Part for which position shall be calculated
                   -> Part -- ^ Part right of with fixed position
                   -> Part -- ^ Part with newly calculated position
 calculatePosition part fix = part { partPosition = calculateLeftHitchPosition fix }
 
 partLength :: Part -> Double
-partLength p = partLengthLeft p + partLengthRight p
+partLength p
+    | signum a == signum b = a + b
+    | otherwise = max (abs a) (abs b)
+    where
+        a = partLengthLeft p
+        b = partLengthRight p
+
+partHitchDistance :: Part -> Double
+partHitchDistance p = abs $ partLengthLeft p + partLengthRight p
 
 trainLength :: Train -> Double
-trainLength = sum . map partLength
+trainLength = sum . map partHitchDistance
 
 trainPosition :: Train -> Position
 trainPosition = partPosition . last
 
 calculateLeftHitchPosition :: Part -> Position
-calculateLeftHitchPosition part = calculatePositionOnPart part $ -partLength part
+calculateLeftHitchPosition part = calculatePositionOnPart part $ -partHitchDistance part
 
 calculateCenterPosition :: Part -> Position
 calculateCenterPosition part = calculatePositionOnPart part $ -partLengthRight part

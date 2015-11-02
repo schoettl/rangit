@@ -42,17 +42,17 @@ spec = do
         it "allows left hitch == right hitch for power car" $ property $
             \ l -> validateTrain [stdTrailer, Part undefined undefined (-l) l] == True
 
-    describe "partLength" $ do
+    describe "partHitchDistance" $ do
         it "must be sum of left and right length (hitch distance)" $ do
-            partLength (Part undefined undefined 3 2) `shouldBe` 5
+            partHitchDistance (Part undefined undefined 3 2) `shouldBe` 5
         it "must return hitch distance even if right length is negative" $ do
-            partLength (Part undefined undefined 3 (-2)) `shouldBe` 1
+            partHitchDistance (Part undefined undefined 3 (-2)) `shouldBe` 1
 
     describe "trainLength" $ do
         it "must equals the sum of it's part lengths" $ do
             let pc = Part undefined undefined 3 2
                 tr = Part undefined undefined 5 7
-            trainLength [tr, pc] `shouldBe` partLength tr + partLength pc
+            trainLength [tr, pc] `shouldBe` partHitchDistance tr + partHitchDistance pc
 
     describe "calculateLeftHitchPosition" $ do
         let sqrt2 = sqrt 2
@@ -72,7 +72,7 @@ spec = do
             it "works for many different angles" $ property $
                 \ x -> let p = testPart x
                            d = euclidianDistance (calculateLeftHitchPosition p) (partPosition p)
-                       in d =~ partLength p
+                       in d =~ partHitchDistance p
         context "negative right length" $ do
             let testPartWithNegativeRightLength :: Double -> Part
                 testPartWithNegativeRightLength angle = Part origin angle 5 (-2)
