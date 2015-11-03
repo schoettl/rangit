@@ -9,6 +9,7 @@ module Rangit.Drive
     , calculateAngleOfLine
     , moveTrainToPosition
     , calculateSteerAngleForBackup
+    , backupPartToPosition
 #ifndef TEST
     , normalizeAngle
     , modReal
@@ -153,8 +154,20 @@ modReal :: Real a => a -> a -> a
 modReal x m = x - m * fromIntegral (floor $ realToFrac x / realToFrac m)
 
 -- | Back up part by matching the left hitch to the target position.
+--
+-- New part position can be calculated. Just:
+-- zwei kreise schneiden: den inneren kreis und den kreis, der durch l (klein
+-- L) um Z beschrieben wird.
+-- But there seems to be no explicit formula for this problem.
+--
+-- Easy workaround (approximation): Just drive train backwards. Distance is
+-- assumed to be the direct distance between hitch and new target position.
 backupPartToPosition :: Part -> Position -> Part
-backupPartToPosition part targetPosition = undefined
+backupPartToPosition part targetPosition =
+    let approximateDistanceToDrive = - euclidianDistance (calculateLeftHitchPosition part) targetPosition
+        steerAngle = calculateSteerAngleForBackup part targetPosition
+        [newPart] = drive [part] approximateDistanceToDrive steerAngle
+     in newPart
 
 -- | Calculate steer angle for backing up part to approach target position. The
 -- target position is approached by matching the left hitch to the target

@@ -6,7 +6,7 @@ import Test.Utils
 import Rangit.Train
 import Rangit.Drive
 import Rangit.Math
-import Data.Vector.Extended (Vector2 (Vector2))
+import Data.Vector.Extended (Vector2 (Vector2), euclidianDistance)
 
 spec :: Spec
 spec = do
@@ -201,3 +201,9 @@ spec = do
         it "works for Korbinian's sketch" $ do
             let lw = pi/2 - atan (4/6.5)
             calculateSteerAngleForBackup korbisPart korbisTargetPosition `shouldSatisfy` \ x -> x >= (lw-0.01) && x <= (lw+0.01)
+
+    describe "backupPartToPosition" $ do
+        it "works for Korbinian's sketch" $ do
+            let newHitchPosition = calculateLeftHitchPosition $ backupPartToPosition korbisPart korbisTargetPosition
+            --newHitchPosition `shouldBe` korbisTargetPosition
+            euclidianDistance newHitchPosition korbisTargetPosition `shouldSatisfy` (<2)
