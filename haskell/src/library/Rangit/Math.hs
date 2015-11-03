@@ -2,7 +2,7 @@ module Rangit.Math
     ( calculateAngleByArcTan
     , calculateMissingTriangleSideABySides
     , calculateMissingTriangleSideAByAngles
-    , calculateMissingAngleAlpha
+    , calculateMissingTriangleAngleAlpha
     , calculateAngleOfLine
     , calculateCircumscribedCircleCenter
     , calculateDForCircumscribedCircleCenter
@@ -26,8 +26,8 @@ calculateMissingTriangleSideAByAngles :: Double -> Double -> Double -> Double
 calculateMissingTriangleSideAByAngles alpha beta b = sin alpha * b / sin beta
 
 -- | Calculate missing angle in triangle (Law of sines)
-calculateMissingAngleAlpha :: Double -> Double -> Double -> Double
-calculateMissingAngleAlpha beta a b = asin $ a * sin beta / b
+calculateMissingTriangleAngleAlpha :: Double -> Double -> Double -> Double
+calculateMissingTriangleAngleAlpha beta a b = asin $ a * sin beta / b
 
 -- | Calculate angle of line between two points.
 calculateAngleOfLine
