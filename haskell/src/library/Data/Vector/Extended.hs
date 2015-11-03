@@ -1,3 +1,5 @@
+{-# LANGUAGE StandaloneDeriving #-}
+
 module Data.Vector.Extended
     ( module V
     , euclidianDistance
@@ -10,10 +12,7 @@ import Data.Vector.Class as V
 import Data.Vector.V2    as V
 import Data.Vector.V3    as V
 
---instance Read Vector2 where
---
---        readPrec =
---        readListPrec =
+deriving instance Read Vector2
 
 euclidianDistance :: Vector v => v -> v -> Scalar
 euclidianDistance a b = vmag $ b - a

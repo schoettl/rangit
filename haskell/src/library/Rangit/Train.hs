@@ -1,4 +1,3 @@
-{-# LANGUAGE StandaloneDeriving #-}
 {-# LANGUAGE CPP #-}
 
 module Rangit.Train
@@ -20,8 +19,6 @@ module Rangit.Train
 
 import Text.Read
 import Data.Vector.Extended (Vector2 (Vector2), v2x, v2y)
-
-deriving instance Read Vector2
 
 -- | A position in the map.
 type Position = Vector2
