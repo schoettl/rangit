@@ -5,16 +5,15 @@ module Rangit.Drive
     , stepLength
     , drive
     , driveAccumulateTrains
-    , calculateSteerAngleToMatchPosition
-    , calculateAngleOfLine
     , moveTrainToPosition
     , calculateSteerAngleForBackup
-    , backupPartToPosition
+    , backupTrainToPosition
 #ifndef TEST
     , normalizeAngle
     , modReal
     , movePart
     , thresholdForCircleAlgorithm
+    , backupPartToPosition
     , calculateInnerCircleRadius
 #endif
     ) where
@@ -111,40 +110,6 @@ movePart part (ps, target) =
         leftHitch = calculateLeftHitchPosition newPart
     in (newPart : ps, leftHitch)
 
--- | Calculate steer angle to reach the target position.
-calculateSteerAngleToMatchPosition
-    :: Part     -- ^ Part (part position and part axis center are on the circle)
-    -> Position -- ^ Target position (also on the circle)
-    -> Double   -- ^ Steer angle for part to reach target position
-calculateSteerAngleToMatchPosition part position =
-    let a = partPosition part
-        b = calculateCenterPosition part
-        c = position
-        steerAngle = if abs (calculateDForCircumscribedCircleCenter a b c) < thresholdForCircleAlgorithm
-            then calculateAngleOfLine a c - partAngle part
-            else calculateSteerAngleFromCircle part position
-     in fixSteerAngle steerAngle
-
-calculateSteerAngleFromCircle :: Part -> Position -> Double
-calculateSteerAngleFromCircle part position =
-    let a = partPosition part
-        b = calculateCenterPosition part
-        c = position
-        center = calculateCircumscribedCircleCenter a b c
-        -- Calculate steer angle from tangent of circle
-        angleToPartPosition = calculateAngleOfLine center a
-        angleOfTangent = angleToPartPosition + pi/2
-     in angleOfTangent - partAngle part
-
--- | Fix steer angle if it is outside of the range [-90°, 90°].
--- See function body for details.
-fixSteerAngle :: Double -> Double
-fixSteerAngle = fix . normalizeAngle
-    where
-        fix a | a < 0.5*pi = a
-              | a > 1.5*pi = a
-              | otherwise  = a - pi
-
 -- | Normalize angle so that it is between 0 (inclusive) and 2 pi (exclusive).
 normalizeAngle :: Double -> Double
 normalizeAngle x = x `modReal` (2*pi)
@@ -152,6 +117,13 @@ normalizeAngle x = x `modReal` (2*pi)
 -- | Modulo operation for instances of Real type class.
 modReal :: Real a => a -> a -> a
 modReal x m = x - m * fromIntegral (floor $ realToFrac x / realToFrac m)
+
+backupTrainToPosition :: Train -> Position -> Train
+backupTrainToPosition train targetPosition = foldl f [] train
+    where
+        f :: Train -> Part -> Train
+        f [] leftmostPart = [backupPartToPosition leftmostPart targetPosition]
+        f newTrain part   = newTrain ++ [backupPartToPosition part (partPosition $ last newTrain)]
 
 -- | Back up part by matching the left hitch to the target position.
 --

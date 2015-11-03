@@ -4,6 +4,7 @@ import Rangit.Train
 import Rangit.Drive
 import Rangit.AI
 import Rangit.IO
+import Rangit.Math
 import System.Environment
 
 main :: IO ()

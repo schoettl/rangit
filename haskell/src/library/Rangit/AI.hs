@@ -10,6 +10,7 @@ module Rangit.AI
 
 import Rangit.Train
 import Rangit.Drive
+import Rangit.Math
 import Data.Vector.Extended (Vector2 (Vector2), vdot, euclidianDistance)
 
 type DiscretePath = [Position]
@@ -36,15 +37,14 @@ backupTrainToFitPath
     -> (DriveCommand, Train) -- ^ Best fitted train
 backupTrainToFitPath [] _ = error "invalid call: path must not be empty."
 backupTrainToFitPath (p:_) train =
-    let reversedTrain = reverseTrain train
-        movedTrain = moveTrainToPosition reversedTrain p
-        unreversedTrain = reverseTrain movedTrain
+    let movedTrain = backupTrainToPosition train p
         oldPowerCar = last train
-        newPowerCar = last unreversedTrain
+        newPowerCar = last movedTrain
         -- besten lenkwinkel und distance herausfinden.
         -- hier kann einiges optimiert werden!
-        distance = - euclidianDistance (partPosition oldPowerCar) (partPosition newPowerCar)
-        steerAngle = calculateSteerAngleToMatchPosition oldPowerCar (calculateCenterPosition newPowerCar)
+        distance = - euclidianDistance                        (calculateLeftHitchPosition oldPowerCar)
+                                                              (calculateLeftHitchPosition newPowerCar)
+        steerAngle = calculateSteerAngleForBackup oldPowerCar (calculateLeftHitchPosition newPowerCar)
         -- Set drive command and drive train
         driveCommand = DriveCommand distance steerAngle
         drivenTrain = drive train distance steerAngle

@@ -157,25 +157,6 @@ spec = do
             it "moves second part" $ do
                 movePart tr ([pc'], target2) `shouldBe` ([tr', pc'], target3)
 
-    describe "calculateSteerAngleToMatchPosition" $ do
-        let car = Part origin 0 undefined 1
-        context "using exact circle algorithm for not too large circles" $ do
-            let -- circle radius := 1
-                otherPoint = Vector2 0.5 (- sqrt 0.75)
-                angleToPartPosition = pi/3 -- inner angles in triangle
-                angleOfTangent = angleToPartPosition + pi/2 -- draw it or believe
-                steerAngle = - (pi - angleOfTangent)
-            it "preconditions for circle algorithm are given" $ do
-                abs (calculateDForCircumscribedCircleCenter (partPosition car) (calculateCenterPosition car) otherPoint) `shouldSatisfy` (>=thresholdForCircleAlgorithm)
-            it "works for a horizontal car and a not too large turning circle" $ do
-                calculateSteerAngleToMatchPosition car otherPoint `shouldAlmostBeAngle` steerAngle
-        context "using simple algorithm for large turning circles" $ do
-            let position = Vector2 10 0.001
-            it "preconditions for simple algorithm are given" $ do
-                abs (calculateDForCircumscribedCircleCenter (partPosition car) (calculateCenterPosition car) position) `shouldSatisfy` (<thresholdForCircleAlgorithm)
-            it "calculates the simple steer angle correctly" $ do
-                calculateSteerAngleToMatchPosition car position `shouldAlmostBe` calculateAngleOfLine origin position
-
     describe "modReal" $ do
         context "some properties of modulo" $ do
             let modulus = 13 :: Int
