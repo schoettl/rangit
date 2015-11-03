@@ -1,6 +1,7 @@
 module Rangit.Trigonometry
     ( calculateAngleByArcTan
-    , calculateMissingTriangleSideA
+    , calculateMissingTriangleSideABySides
+    , calculateMissingTriangleSideAByAngles
     , calculateMissingAngleAlpha
     , calculateAngleOfLine
     , calculateCircumscribedCircleCenter
@@ -17,8 +18,12 @@ calculateAngleByArcTan :: Double -- ^ Delta x
 calculateAngleByArcTan = flip atan2
 
 -- | Calculate missing triangle side (Law of cosines)
-calculateMissingTriangleSideA :: Double -> Double -> Double -> Double
-calculateMissingTriangleSideA alpha b c = sqrt $ b^2 + c^2 + 2*b*c*cos alpha
+calculateMissingTriangleSideABySides :: Double -> Double -> Double -> Double
+calculateMissingTriangleSideABySides alpha b c = sqrt $ b^2 + c^2 + 2*b*c*cos alpha
+
+-- | Calculate missing triangle side (Law of sines)
+calculateMissingTriangleSideAByAngles :: Double -> Double -> Double -> Double
+calculateMissingTriangleSideAByAngles alpha beta b = sin alpha * b / sin beta
 
 -- | Calculate missing angle in triangle (Law of sines)
 calculateMissingAngleAlpha :: Double -> Double -> Double -> Double
