@@ -13,12 +13,13 @@ module Rangit.Drive
     , modReal
     , movePart
     , thresholdForCircleAlgorithm
+    , calculateInnerCircleRadius
 #endif
     ) where
 
 import Rangit.Train
 import Rangit.Trigonometry
-import Data.Vector.Extended (Vector2 (Vector2), v2x, v2y)
+import Data.Vector.Extended (Vector2 (Vector2), v2x, v2y, euclidianDistance, vlinear)
 
 data DriveCommand = DriveCommand Double Double
 
@@ -149,3 +150,26 @@ normalizeAngle x = x `modReal` (2*pi)
 -- | Modulo operation for instances of Real type class.
 modReal :: Real a => a -> a -> a
 modReal x m = x - m * fromIntegral (floor $ realToFrac x / realToFrac m)
+
+-- | Calculate the radius of the circle drawn by the axis center when the part
+-- is backing up to approach the target position. The target position is
+-- approached by matching the left hitch to the target position. This refers to
+-- Korbinian's sketch.
+calculateInnerCircleRadius :: Part -> Position -> Double
+calculateInnerCircleRadius part newHitchPosition =
+    let a = calculateCenterPosition part
+        h = calculateLeftHitchPosition part
+        z = newHitchPosition
+        m = vlinear 0.5 h z
+        d = euclidianDistance h z
+        l = partLengthLeft part
+        angleHZ = calculateAngleOfLine h z
+        lenAM = euclidianDistance a m
+        beta  = angleHZ - partAngle part
+        alpha = calculateMissingAngleAlpha beta (d/2) lenAM
+        gamma = calculateMissingAngleAlpha beta l     lenAM
+        alpha' = pi/2 - alpha
+        gamma' = pi/2 - gamma
+        beta'  = pi - alpha' - gamma'
+        r = calculateMissingTriangleSideAByAngles gamma' beta' lenAM
+     in r

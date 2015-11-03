@@ -189,3 +189,9 @@ spec = do
                 ((2*pi) `modReal` modulus) `shouldBe` 0
             it "3 pi modulo 2 pi" $ do
                 ((3*pi) `modReal` modulus) `shouldBe` pi
+
+    describe "calculateInnerCircleRadius" $ do
+        let part = Part origin pi 3 6.5
+            targetPosition = Vector2 11.5 (-4.25)
+        it "works for Korbinian's sketch" $ do
+            calculateInnerCircleRadius part targetPosition `shouldSatisfy` \ x -> x >= 3.99 && x <= 4.01
