@@ -8,6 +8,7 @@ module Rangit.Drive
     , calculateSteerAngleToMatchPosition
     , calculateAngleOfLine
     , moveTrainToPosition
+    , calculateSteerAngleForBackup
 #ifndef TEST
     , normalizeAngle
     , modReal
@@ -150,6 +151,13 @@ normalizeAngle x = x `modReal` (2*pi)
 -- | Modulo operation for instances of Real type class.
 modReal :: Real a => a -> a -> a
 modReal x m = x - m * fromIntegral (floor $ realToFrac x / realToFrac m)
+
+-- | Calculate steer angle for backing up part to approach target position. The
+-- target position is approached by matching the left hitch to the target
+-- position. This refers to Korbinian's sketch.
+calculateSteerAngleForBackup :: Part -> Position -> Double
+calculateSteerAngleForBackup part targetPosition =
+    pi/2 - atan (calculateInnerCircleRadius part targetPosition / partLengthRight part)
 
 -- | Calculate the radius of the circle drawn by the axis center when the part
 -- is backing up to approach the target position. The target position is

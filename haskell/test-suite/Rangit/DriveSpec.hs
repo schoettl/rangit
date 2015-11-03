@@ -190,8 +190,14 @@ spec = do
             it "3 pi modulo 2 pi" $ do
                 ((3*pi) `modReal` modulus) `shouldBe` pi
 
+    let korbisPart = Part origin pi 3 6.5
+        korbisTargetPosition = Vector2 11.5 (-4.25)
     describe "calculateInnerCircleRadius" $ do
-        let part = Part origin pi 3 6.5
-            targetPosition = Vector2 11.5 (-4.25)
         it "works for Korbinian's sketch" $ do
-            calculateInnerCircleRadius part targetPosition `shouldSatisfy` \ x -> x >= 3.99 && x <= 4.01
+            let r = 4
+            calculateInnerCircleRadius korbisPart korbisTargetPosition `shouldSatisfy` \ x -> x >= (r-0.01) && x <= (r+0.01)
+
+    describe "calculateSteerAngleForBackup" $ do
+        it "works for Korbinian's sketch" $ do
+            let lw = pi/2 - atan (4/6.5)
+            calculateSteerAngleForBackup korbisPart korbisTargetPosition `shouldSatisfy` \ x -> x >= (lw-0.01) && x <= (lw+0.01)
