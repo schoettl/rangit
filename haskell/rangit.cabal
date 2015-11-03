@@ -23,7 +23,7 @@ library
                      , Rangit.Drive
                      , Rangit.AI
                      , Rangit.IO
-                     , Rangit.Trigonometry
+                     , Rangit.Math
                      , Debug.Trace.Extended
                      , Data.Vector.Extended
   build-depends:       base
