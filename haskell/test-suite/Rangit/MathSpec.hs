@@ -1,10 +1,10 @@
-module Rangit.TrigonometrySpec (spec) where
+module Rangit.MathSpec (spec) where
 
 import Test.Hspec
 import Test.QuickCheck
 import Test.Utils
 import Rangit.Train
-import Rangit.Trigonometry
+import Rangit.Math
 import Data.Vector.Extended (Vector2 (Vector2))
 import Control.Monad
 import Data.Tuple.HT

@@ -19,7 +19,7 @@ module Rangit.Drive
     ) where
 
 import Rangit.Train
-import Rangit.Trigonometry
+import Rangit.Math
 import Data.Vector.Extended (Vector2 (Vector2), v2x, v2y, euclidianDistance, vlinear)
 
 data DriveCommand = DriveCommand Double Double
@@ -151,6 +151,10 @@ normalizeAngle x = x `modReal` (2*pi)
 -- | Modulo operation for instances of Real type class.
 modReal :: Real a => a -> a -> a
 modReal x m = x - m * fromIntegral (floor $ realToFrac x / realToFrac m)
+
+-- | Back up part by matching the left hitch to the target position.
+backupPartToPosition :: Part -> Position -> Part
+backupPartToPosition part targetPosition = undefined
 
 -- | Calculate steer angle for backing up part to approach target position. The
 -- target position is approached by matching the left hitch to the target

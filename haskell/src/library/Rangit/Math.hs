@@ -1,4 +1,4 @@
-module Rangit.Trigonometry
+module Rangit.Math
     ( calculateAngleByArcTan
     , calculateMissingTriangleSideABySides
     , calculateMissingTriangleSideAByAngles

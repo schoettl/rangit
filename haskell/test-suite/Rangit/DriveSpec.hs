@@ -5,7 +5,7 @@ import Test.QuickCheck
 import Test.Utils
 import Rangit.Train
 import Rangit.Drive
-import Rangit.Trigonometry
+import Rangit.Math
 import Data.Vector.Extended (Vector2 (Vector2))
 
 spec :: Spec
