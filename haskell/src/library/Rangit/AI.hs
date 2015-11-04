@@ -36,19 +36,20 @@ backupTrainToFitPath
     -> Train                 -- ^ Train to move
     -> (DriveCommand, Train) -- ^ Best fitted train
 backupTrainToFitPath [] _ = error "invalid call: path must not be empty."
-backupTrainToFitPath (p:_) train =
-    let movedTrain = backupTrainToPosition train p
+backupTrainToFitPath path train =
+    let driveCommand@(DriveCommand d a) = calculateBestDriveCommandForBackup path train
+    in (driveCommand, drive train d a)
+
+calculateBestDriveCommandForBackup :: DiscretePath -> Train -> DriveCommand
+calculateBestDriveCommandForBackup (position:_) train =
+    let movedTrain = backupTrainToPosition train position
         oldPowerCar = last train
         newPowerCar = last movedTrain
         -- besten lenkwinkel und distance herausfinden.
         -- hier kann einiges optimiert werden!
-        distance = - euclidianDistance                        (calculateLeftHitchPosition oldPowerCar)
-                                                              (calculateLeftHitchPosition newPowerCar)
+        distance = - euclidianDistance (partPosition oldPowerCar) (partPosition newPowerCar)
         steerAngle = calculateSteerAngleForBackup oldPowerCar (calculateLeftHitchPosition newPowerCar)
-        -- Set drive command and drive train
-        driveCommand = DriveCommand distance steerAngle
-        drivenTrain = drive train distance steerAngle
-    in (driveCommand, drivenTrain)
+     in DriveCommand distance steerAngle
 
 -- | Calculate angle in path at given distance from the start.
 calculateAngleInPath
