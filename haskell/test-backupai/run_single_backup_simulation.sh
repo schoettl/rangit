@@ -17,15 +17,16 @@ fi
 IFS=':' read -a array <<< "$1"
 pathFile="${array[0]}"
 trainFile="${array[1]}"
-resultFile="${array[2]}"
+resultFileNoExt="${array[2]}"
+resultFileMatrix="$resultFileNoExt.txt"
 
 initialTrain="$(../inittrain4path "$pathFile" < "$trainFile")"
 
 echo "Processing: $pathFile and $trainFile" >&2
 
-echo -e "# $pathFile\n# $trainFile" > "$resultFile"
+echo -e "# $pathFile\n# $trainFile" > "$resultFileMatrix"
 
   ../backupai "$pathFile" <(echo "$initialTrain") \
-| tee "$resultFile.cmd" \
-| ../simulation --print-interval=0 <(echo "$initialTrain") \
-| ../trains2positions >> "$resultFile"
+| tee "$resultFileNoExt.cmd.txt" \
+| ../simulation --print-interval=0.5 <(echo "$initialTrain") \
+| ../trains2positions >> "$resultFileMatrix"

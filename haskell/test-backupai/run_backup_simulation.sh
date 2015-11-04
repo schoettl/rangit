@@ -10,9 +10,9 @@ for pathFile in paths/*; do
 
         pb="${pathFile##*/}"
         tb="${trainFile##*/}"
-        resultFile="results/${pb%.*}_${tb%.*}.txt"
+        resultFileNoExt="results/${pb%.*}_${tb%.*}"
 
-        echo "$pathFile:$trainFile:$resultFile"
+        echo "$pathFile:$trainFile:$resultFileNoExt"
     done
 done | xargs -n1 ./run_single_backup_simulation.sh
 #done | parallel -j+0 --eta ./run_single_backup_simulation.sh
