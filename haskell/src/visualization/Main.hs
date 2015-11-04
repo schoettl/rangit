@@ -18,7 +18,7 @@ stdin :: FD
 stdin = 0
 
 -- | Redraw interval in milliseconds.
-redrawInterval = 2000
+redrawInterval = 100
 
 -- | Interval to read one line from input in milliseconds.
 inputReadInterval = 100
@@ -94,7 +94,7 @@ drawParts ps = mapM_ (drawPart ps) ps
 
 drawPart :: Train -> Part -> Render ()
 drawPart ps p = do
-    setSourceRGB 0 1 1
+    setSourceRGB 1 0 0
     setLineWidth 5
     moveTo `callWithPosition` partPosition p
     lineTo `callWithPosition` calculateCenterPosition p
@@ -105,7 +105,7 @@ drawPart ps p = do
 
 drawAxis :: Double -> Part -> Render ()
 drawAxis wheelbase p = do
-    setSourceRGB 1 1 1
+    setSourceRGB 0 0 0
     setLineWidth 2
     --newPath
     let (p1, p2) = calculatePerpendicularLine (calculateCenterPosition p) wheelbase (partAngle p)
