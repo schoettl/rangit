@@ -110,6 +110,15 @@ movePart part (ps, target) =
         leftHitch = calculateLeftHitchPosition newPart
     in (newPart : ps, leftHitch)
 
+-- | Fix steer angle if it is outside of the range [-90°, 90°].
+-- See function body for details.
+fixSteerAngle :: Double -> Double
+fixSteerAngle = fix . normalizeAngle
+    where
+        fix a | a < 0.5*pi = a
+              | a > 1.5*pi = a
+              | otherwise  = a - pi
+
 -- | Normalize angle so that it is between 0 (inclusive) and 2 pi (exclusive).
 normalizeAngle :: Double -> Double
 normalizeAngle x = x `modReal` (2*pi)
@@ -145,7 +154,7 @@ backupPartToPosition part targetPosition =
 -- target position is approached by matching the left hitch to the target
 -- position. This refers to Korbinian's sketch.
 calculateSteerAngleForBackup :: Part -> Position -> Double
-calculateSteerAngleForBackup part targetPosition =
+calculateSteerAngleForBackup part targetPosition = fixSteerAngle $
     pi/2 - atan (calculateInnerCircleRadius part targetPosition / partLengthRight part)
 
 -- | Calculate the radius of the circle drawn by the axis center when the part
