@@ -9,6 +9,7 @@ module Rangit.Train
     , partLength
     , partHitchDistance
     , trainLength
+    , trainPosition
     , calculateCenterPosition
     , calculateLeftHitchPosition
     , translateTrainTo
