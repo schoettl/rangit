@@ -3,6 +3,6 @@
 # run it from it's directory!
 
 mkdir -p trains/
-rm trains/*
+rm -f trains/*
 
 ../dist/build/generatetrains/generatetrains trains/

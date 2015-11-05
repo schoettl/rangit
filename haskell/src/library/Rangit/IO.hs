@@ -1,16 +1,28 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE FlexibleInstances #-}
 
-module Rangit.IO where
+module Rangit.IO
+    ( encodeTrainAsJson
+    , loadTrainFromFile
+    , loadTrain
+    , loadPathFromFile
+    , loadPath
+    ) where
 
 import Rangit.Train
 import Rangit.AI
 import System.IO
 import Data.Aeson
+import Data.Vector.Extended (Vector2 (Vector2))
 import qualified Data.ByteString.Lazy.Char8 as BSL
 
-instance ToJSON Position where
-    toJSON (Position x y) = object [ "x" .= x , "y" .= y ]
+instance ToJSON Vector2 where
+    toJSON (Vector2 x y) = object [ "x" .= x , "y" .= y ]
+
+instance FromJSON Vector2 where
+    parseJSON (Object v) = Vector2
+        <$> (v .: "x")
+        <*> (v .: "y")
 
 instance ToJSON Part where
     toJSON (Part position angle leftLength rightLength) =
@@ -19,6 +31,14 @@ instance ToJSON Part where
                , "leftLength"  .= leftLength
                , "rightLength" .= rightLength
                ]
+
+instance FromJSON Part where
+    parseJSON (Object p) = Part
+        <$> (p .: "position")
+        <*> (p .: "angle")
+        <*> (p .: "leftLength")
+        <*> (p .: "rightLength")
+
 
 encodeTrainAsJson :: Train -> String
 encodeTrainAsJson = BSL.unpack . encode . toJSON
@@ -47,4 +67,4 @@ doReadFile :: (Handle -> IO a) -> FilePath -> IO a
 doReadFile f s = f =<< openFile s ReadMode
 
 toPosition :: [Double] -> Position
-toPosition (x:y:_) = Position x y
+toPosition (x:y:_) = Vector2 x y

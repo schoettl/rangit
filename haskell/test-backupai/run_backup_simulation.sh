@@ -1,26 +1,20 @@
 #!/bin/bash
 
 # run it from it's directory!
+# GNU parallel must be installed.
 
 usage="$0"
 
-# $1: error message
-exitWithError() {
-    echo "$1"
-    exit 1
-}
-
 for pathFile in paths/*; do
     for trainFile in trains/*; do
+
         pb="${pathFile##*/}"
         tb="${trainFile##*/}"
-        resultFile="results/${pb%.*}_${tb%.*}.txt"
-        initialTrain="$(../inittrain4path "$pathFile" < "$trainFile")"
+        resultFileNoExt="results/${pb%.*}_${tb%.*}"
 
-        { echo "# $pathFile"; echo "# $trainFile"; } > "$resultFile"
-
-          ../backupai "$pathFile" <(echo "$initialTrain") \
-        | ../simulation --print-interval=0 <(echo "$initialTrain") \
-        | ../trains2positions >> "$resultFile"
+        echo "$pathFile:$trainFile:$resultFileNoExt"
     done
-done
+done | xargs -n1 ./run_single_backup_simulation.sh
+#done | parallel -j+0 --eta ./run_single_backup_simulation.sh
+
+# GNU parallel somehow is not working parallel :(

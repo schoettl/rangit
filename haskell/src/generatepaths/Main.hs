@@ -7,7 +7,10 @@ import System.Console.Docopt
 
 patterns :: Docopt
 patterns = [docopt|usage:
-  generatepaths <foldername>
+  generatepaths [options] <foldername>
+
+options:
+  -x, --x-step=<deltax>  take given x step in path calculation [default: 1].
 |]
 
 getArgOrExit = getArgOrExitWith patterns
@@ -24,19 +27,19 @@ functions =
 
 maxValue = 100
 
-step = 1
-
-xs = [0, step ..maxValue]
-
 main :: IO ()
 main = do
     args <- parseArgsOrExit patterns =<< getArgs
     let Just foldername = getArg args (argument "foldername")
-    mapM_ (savePath foldername) functions
+        Just xStepStr = getArg args (longOption "x-step")
+        xStep = read xStepStr :: Double
 
-savePath :: FilePath -> (String, Double -> Double) -> IO ()
-savePath foldername (s, f) = do
-    let ys = map f xs
+    mapM_ (savePath xStep foldername) functions
+
+savePath :: Double -> FilePath -> (String, Double -> Double) -> IO ()
+savePath xStep foldername (s, f) = do
+    let xs = [0, xStep ..maxValue]
+        ys = map f xs
         ys' = takeWhile (<=maxValue) ys
         pairs = zip xs ys'
         lines = map (unwords . map show . (\ (x, y) -> [x, y])) pairs

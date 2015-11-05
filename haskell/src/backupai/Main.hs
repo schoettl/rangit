@@ -12,8 +12,7 @@ import System.Environment (getArgs)
 import System.Console.Docopt
 
 patterns :: Docopt
-patterns = [docopt|
-backupai version 1.0
+patterns = [docopt|backupai version 1.0
 
 usage:
   backupai [options] <pathfile> <trainfile>

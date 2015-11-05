@@ -1,6 +1,7 @@
 module Main where
 
 import Rangit.Train
+import Data.Vector.Extended (Vector2 (Vector2))
 
 main :: IO ()
 main = interact program
@@ -16,4 +17,4 @@ positionsToStrings :: [Position] -> [String]
 positionsToStrings ps = show (length ps) : map show (concatMap positionToList ps)
 
 positionToList :: Position -> [Double]
-positionToList (Position x y) = [x, y]
+positionToList (Vector2 x y) = [x, y]
