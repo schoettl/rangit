@@ -7,6 +7,7 @@ import System.Environment (getArgs)
 import System.Console.Docopt
 import Control.Arrow
 
+
 patterns :: Docopt
 patterns = [docopt|usage:
   generatetrains <foldername>

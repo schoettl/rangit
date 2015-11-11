@@ -113,6 +113,9 @@ spec = do
         let train = fixInitialPositions [Part origin pi 0 1, Part origin pi 1 1]
             path = [Vector2 5 0, Vector2 6 0, Vector2 7 (-1)]
             result = backupTrainAccumulateDriveCommands path train
-        it "should return as many drive commands as there are points in path,\
-           \as long as no waypoints are overrunned" $ do
-            length result `shouldBe` length path
+        it "backupai strategy 1: should return one less drive commands as there are points in path \
+           \(as long as no waypoints are overrunned)" $ do
+            length result `shouldBe` (length path - 1)
+--        it "backupai strategy 2: should return as many drive commands as there are points in path \
+--           \(as long as no waypoints are overrunned)" $ do
+--            length result `shouldBe` length path

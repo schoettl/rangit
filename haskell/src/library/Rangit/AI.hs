@@ -38,6 +38,7 @@ backupTrainAccumulateDriveCommands path train =
     where
         startRecursion :: DiscretePath -> Train -> [DriveCommand]
         startRecursion [] _ = []
+        startRecursion [_] _ = [] -- for backupai strategy 1 there must be more than one point in the path (because of calculateAngleInPath)
         startRecursion path train =
             let (command, newTrain) = backupTrainToFitPath path train in
                 command : backupTrainAccumulateDriveCommands (tail path) newTrain
@@ -49,11 +50,11 @@ backupTrainToFitPath
     -> (DriveCommand, Train) -- ^ Best fitted train
 backupTrainToFitPath [] _ = error "invalid call: path must not be empty."
 backupTrainToFitPath path train =
-    let driveCommand@(DriveCommand d a) = calculateBestDriveCommandForBackup path train
+    let driveCommand@(DriveCommand d a) = calculateBestDriveCommandForBackup1 path train
     in (driveCommand, drive train d a)
 
-calculateBestDriveCommandForBackup :: DiscretePath -> Train -> DriveCommand
-calculateBestDriveCommandForBackup (position:_) train =
+calculateBestDriveCommandForBackup2 :: DiscretePath -> Train -> DriveCommand
+calculateBestDriveCommandForBackup2 (position:_) train =
     let movedTrain = backupTrainToPosition train position
         oldPowerCar = last train
         newPowerCar = last movedTrain
@@ -103,7 +104,7 @@ calculateBestDriveCommandForBackup1 path@(p:_) train =
 
         best :: (Double, Double, Train)
         best = minimumBy (\ (x, _, _) (y, _, _) -> compare x y) $ zip3 diffs steerAngles trains
-        (_, bestSteerAngle, bestTrain) = best
+        (_, bestSteerAngle, _) = best
     in DriveCommand distanceToDrive bestSteerAngle
 
 -- | Calculate error by position and angle of power car and by angle of trailing parts.
@@ -130,9 +131,10 @@ calculateIdealTrain path train = fixInitialPositions $ foldr f [newPowerCar] (in
     where
         calcAngle d = calculateAngleInPath path d - pi
         powerCar = last train
-        newPowerCar = powerCar { partPosition = head path
-                               , partAngle = calcAngle $ partLengthRight powerCar
-                               }
+        newPowerCar = powerCar
+            { partPosition = head path
+            , partAngle = calcAngle $ partLengthRight powerCar
+            }
         f :: Part -> Train -> Train
         f p ps = p { partAngle = angle } : ps
             where angle = calcAngle $ partLengthRight p + sum (map partLength ps)
