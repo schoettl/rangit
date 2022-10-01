@@ -1,6 +1,24 @@
 Rangit
 ======
 
+Future Plans
+------------
+
+Die Module `src/library/Rangit/{Train,Drive}.hs` sind der Kern und enthalten die API.
+
+Meine Ideen für einen Online-Rangiersimulator wären:
+
+- per REST-API (z.B. servant) die Core-API freigeben
+- Elm UI schreiben, das die API verwendet
+- oder alternativ dieses Tauri, das native Apps ermöglichen würde –
+  aber der native Teil läuft ja unter Rust, also ist der Haskell-Code
+  nicht direkt verwendbar...
+
+Beim Elm UI könnte man:
+
+- durch Klicken das einfache Anfahren zu neuen Positionen implementieren
+- durch Dragging lenken und evtl. gleichzeitig auch ziehen/schieben
+
 General Overview
 ----------------
 
